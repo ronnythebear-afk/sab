@@ -4,13 +4,13 @@ Puts new photos on the site.
     pip install pillow pillow-heif "opencv-python-headless<5"
     python3 tools/photos.py
 
-Photos in add/photos/ go on the old hard drive: the print on the front page that shows a
-random one each time it's tapped. Each photo is shrunk, saved in site/media/drive/ and
+Photos in add/photos/ go on the old hard drive: the video board on the scoreboard shows
+them in turn, with the selfies. Each photo is shrunk, saved in site/media/drive/ and
 listed in site/content/drive.js with its date (from the camera, or from a date in the file
 name). If the file has a name you gave it, rather than one the camera gave it, that name
 is its caption: "my tiny christmas tree.jpg" says "my tiny christmas tree".
 
-Photos in add/selfies/ go in the photo booth strips, through tools/faces.py.
+Photos in add/selfies/ go on the video board too, through tools/faces.py.
 
 Photos that go in are taken out of add/. A selfie with no face the booth can find stays
 there, so you can see which ones didn't work.

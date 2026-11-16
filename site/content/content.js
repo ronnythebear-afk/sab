@@ -180,33 +180,6 @@ window.SAB = {
           "url": "read.html?c=prompting-creativity"
         }
       ]
-    },
-    {
-      "id": "originals",
-      "title": "BuzzFeed Originals",
-      "client": "BuzzFeed",
-      "year": "2012–2019",
-      "images": [
-        {
-          "src": "media/work/buzzfeed-team.jpg",
-          "alt": "A BuzzFeed team cheering around a laptop"
-        }
-      ],
-      "words": [
-        "I spent seven years at BuzzFeed (2012-2019) with twice as many titles, culminating as Head of BuzzFeed Originals, managing a department of nearly 200 creatives across both editorial and marketing."
-      ],
-      "quotes": [
-        {
-          "text": "Summer helped us crack our distributed model, which has had an incredible impact on our business and the industry.",
-          "who": "Frank Cooper, BuzzFeed CMO, in Adweek"
-        }
-      ],
-      "links": [
-        {
-          "label": "Adweek",
-          "url": "https://www.adweek.com/brand-marketing/omg-buzzfeed-names-its-first-creative-executive-producer-169881/"
-        }
-      ]
     }
   ],
   "card": {

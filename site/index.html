@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Summer Anne Burton</title>
 <meta name="description" content="Summer Anne Burton is a creative director in Austin, Texas.">
-<meta name="theme-color" content="#f7479f">
+<meta name="theme-color" content="#13213f">
 <meta name="color-scheme" content="light">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Summer Anne Burton">
@@ -16,40 +16,34 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600..900&family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..500&family=Space+Mono:wght@400;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600..900&family=Doto:wght@700;900&family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..500&family=Space+Mono:wght@400;700&display=swap">
 <link rel="stylesheet" href="assets/site.css">
 </head>
-<body>
+<body class="game">
 <!--
-  The whole site is one page. It starts as a pile: the name in cut-out letters, photo booth
-  strips, a photo from the old hard drive, work, writing, drawings, playlists and two index
-  cards. Everything can be picked up, thrown and tapped open. Tidy lines it all up.
+  The site is a ballpark under the Austin sky, at whatever time it is in Austin. Tap to swing,
+  and the ball goes where you tapped: the billboards are the work, the ticker is the writing,
+  the plaques are Every Hall of Famer, the video board is the photo booth and the old hard
+  drive, and over the wall is a home run, which plays a playlist. Every hit is a card, and
+  the binder holds all of them.
 -->
-<header class="top">
-  <nav class="top-nav" aria-label="Jump to">
-    <a href="#work">Work</a><a href="#writing">Writing</a><a href="#drawings">Drawings</a><a href="#playlists">Playlists</a><a href="#cv">CV</a><a id="top-mail">Email</a>
-  </nav>
-  <div class="top-tools">
-    <button class="tool" id="tidy" aria-pressed="false">Tidy</button>
-    <button class="tool" id="shake">Shake</button>
-  </div>
-</header>
+<main class="park" id="park" aria-label="A ballpark. Tap to swing."></main>
 
-<main class="home" aria-label="Summer Anne Burton">
-  <div class="pile" id="pile"></div>
-  <div class="tidy" id="tidy-view" hidden></div>
-</main>
+<nav class="hud-top" aria-label="Summer Anne Burton">
+  <a href="#cv">CV</a><a id="mail">Email</a>
+</nav>
+<p class="hint" id="hint" aria-hidden="true">Tap to swing</p>
+<button class="cards-btn" id="cards-btn" type="button">Cards <b id="got">0</b>/<span id="of">0</span></button>
 
+<dialog class="binder-d" id="binder" aria-label="Cards"></dialog>
 <dialog class="sheet-d" id="sheet" aria-label="A closer look"></dialog>
-<dialog class="lightbox" id="lightbox" aria-label="A drawing"></dialog>
-<div class="flash" id="flash" aria-hidden="true"></div>
+<dialog class="lightbox" id="lightbox" aria-label="A closer look"></dialog>
 
 <script src="content/content.js"></script>
 <script src="content/writing.js"></script>
 <script src="content/playlists.js"></script>
 <script src="content/faces.js"></script>
 <script src="content/drive.js"></script>
-<script src="assets/vendor/matter.min.js"></script>
-<script src="assets/site.js"></script>
+<script src="assets/game.js"></script>
 </body>
 </html>

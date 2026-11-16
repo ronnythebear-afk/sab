@@ -6,10 +6,10 @@
   const slug = new URLSearchParams(location.search).get('c') || '';
   const entry = W.find(a => a.slug === slug);
   const fmt = d => { if (!d) return ''; const [y, m, dd] = d.split('-'); const mo = m ? ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][+m - 1] : ''; return [mo, dd ? +dd + ',' : '', y].filter(Boolean).join(' '); };
-  const back = '<p class="r-links"><a href="./#writing">Writing</a></p>';
+  const back = '<p class="r-links"><a href="./">Back</a></p>';
 
   if (!/^[a-z0-9-]+$/i.test(slug) || !entry || !entry.here) {
-    main.innerHTML = `<div class="r-missing"><p class="r-links">${entry ? `<a href="${esc(entry.url)}">${esc(entry.title)} ↗</a>` : ''}<a href="./#writing">Writing</a></p></div>`;
+    main.innerHTML = `<div class="r-missing"><p class="r-links">${entry ? `<a href="${esc(entry.url)}">${esc(entry.title)} ↗</a>` : ''}<a href="./">Back</a></p></div>`;
     return;
   }
 

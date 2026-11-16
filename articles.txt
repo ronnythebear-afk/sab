@@ -1,7 +1,7 @@
 # Your writing, in the order it shows on the site. One link per line.
 #
 # Paste a link on a new line and save. The site makes its own clean copy of the article
-# (words and pictures, no ads) and adds it. The first five show up in the pile.
+# (words and pictures, no ads) and adds it. They run on the scoreboard ticker.
 #
 # If a site can't be copied, the link still goes in and opens the original. To give it a
 # proper title, add it after the link like this:
@@ -12,14 +12,5 @@
 https://www.buzzfeed.com/summeranne/the-year-without-esme
 https://www.buzzfeed.com/summeranne/crush-mixtapes
 https://www.buzzfeednews.com/article/summeranne/social-networking-a-love-story
-https://www.buzzfeed.com/summeranne/the-33-best-forgotten-teen-shows-of-the-90s
 https://www.buzzfeed.com/summeranne/what-vine-did-for-us
-https://www.buzzfeed.com/summeranne/elder-scrolls-online
-https://www.buzzfeed.com/summeranne/the-future-is-here-and-her-name-is-princess-monster-truck
-https://www.buzzfeed.com/summeranne/24-invaluable-skills-to-learn-for-free-online-this-year
 https://www.praytellagency.com/blog/prompting-creativity-how-praytell-is-collaborating-with-ai
-https://medium.com/@summeranne/laura-mary-and-me-3b4b26739092 | Laura, Mary, And Me | Medium | 2017
-https://not.fangraphs.com/daniel-straily-a-portrait-of-love/ | Daniel Straily: A Portrait Of Love | NotGraphs | 
-https://not.fangraphs.com/endy-chavez-its-never-the-endy-the-line/
-https://not.fangraphs.com/13-pitchers-with-more-wins-than-the-astros-on-the-road/ | 13 Pitchers With More Wins Than The Astros On The Road | NotGraphs | 
-https://web.archive.org/web/2014/http://thehairpin.com/2011/09/your-new-favorite-old-songs | Your New Favorite Old Songs | The Hairpin | 2011
