@@ -1,0 +1,28 @@
+/* The reading room. A plain, quiet page for reading, in the same paper and ink. */
+.reading .room-bar { margin: 0; }
+.reader { max-width: 760px; margin: 0 auto; padding: clamp(36px, 7vw, 80px) var(--gutter) 0; }
+.loading { font: 400 22px var(--f-hand); color: var(--ink-2); }
+.r-mast { display: flex; justify-content: space-between; gap: 12px; padding-bottom: 10px; border-bottom: 4px double var(--ink); font: 700 13px/1.3 var(--f-mono); text-transform: uppercase; letter-spacing: .08em; }
+.r-head h1 { margin: 22px 0 12px; font: 600 clamp(36px, 6vw, 60px)/1.04 var(--f-serif); letter-spacing: -.02em; }
+.r-dek { margin: 0 0 14px; font: italic 400 clamp(20px, 2.4vw, 24px)/1.4 var(--f-serif); color: var(--ink-2); }
+.r-by { margin: 0 0 30px; font: 700 13px/1 var(--f-mono); text-transform: uppercase; letter-spacing: .1em; }
+.r-by::before { content: ''; display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--pink); margin-right: 8px; vertical-align: 0; }
+.r-body { font: 400 20px/1.65 var(--f-serif); }
+.r-body p { margin: 0 0 1.05em; }
+.r-body h2 { margin: 1.8em 0 .6em; font: 800 clamp(22px, 2.6vw, 28px)/1.15 var(--f-display); letter-spacing: -.015em; }
+.r-body blockquote { margin: 1.4em 0; padding: 4px 0 4px 20px; border-left: 5px solid var(--pink); font-style: italic; }
+.r-body ul { padding-left: 1.2em; }
+.r-body li { margin-bottom: .4em; }
+.r-body a { text-decoration-color: var(--pink); }
+.r-body figure { margin: 1.6em 0; }
+.r-body figure img { width: 100%; height: auto; background: var(--paper-2); border: 6px solid #fff; box-shadow: 0 1px 4px rgba(0, 0, 0, .1); }
+.r-body figcaption { margin-top: 8px; font: 400 14px/1.45 var(--f-mono); color: var(--ink-2); }
+.r-body .credit { display: inline-block; font-size: 12px; opacity: .8; }
+.r-link a { display: inline-block; padding: 10px 14px; border: 1.5px dashed var(--ink-2); border-radius: 8px; font: 400 15px/1.3 var(--f-mono); text-decoration: none; }
+.r-note { margin-top: 40px; padding: 18px 20px; background: var(--yellow); border: 2px solid var(--ink); transform: rotate(-.5deg); }
+.r-note p { margin: 0; font-size: 17px; }
+.r-more { margin-top: 70px; }
+.r-more-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+.r-more .clip { transform: none; margin: 0; }
+.r-missing { text-align: center; padding: 40px 0; }
+.r-missing p { font-size: 20px; }

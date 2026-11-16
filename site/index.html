@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Summer Anne Burton</title>
+<meta name="description" content="Summer Anne Burton is a creative director in Austin, Texas. Formerly Head of BuzzFeed Originals, founder of Tenderly, and the artist behind Every Hall of Famer.">
+<meta name="theme-color" content="#f5efe2">
+<meta name="color-scheme" content="light">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Summer Anne Burton">
+<meta property="og:description" content="Creative director in Austin, Texas. Some of the things I’ve done.">
+<meta property="og:image" content="https://summeranneburton.com/media/og.png">
+<meta property="og:url" content="https://summeranneburton.com/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Gochi+Hand&family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..500&family=Space+Mono:wght@400;700&display=swap">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<main id="top">
+  <!-- The front page is a list. Everything else hangs off it. -->
+  <header class="mast" id="mast">
+    <div class="mast-type">
+      <h1 class="name" id="name" title="Tap to print it again">Summer Anne Burton</h1>
+      <p class="intro" id="intro"></p>
+      <div class="mast-tools">
+        <div class="dye" id="dye" role="group" aria-label="Try a new shade on every photo"></div>
+        <a class="hurry" href="#work">in a hurry? just the work →</a>
+      </div>
+    </div>
+    <button class="booth" id="booth" aria-label="Photo booth strip. Tap for a new strip."></button>
+  </header>
+
+  <section class="list-wrap" id="list" aria-label="Some of the things I’ve done">
+    <div class="list-head">
+      <h2 class="list-title">Some of the things I’ve done</h2>
+      <div class="list-tools">
+        <div class="tool" id="sort" role="group" aria-label="Order"></div>
+        <div class="tool" id="kinds" role="group" aria-label="Show"></div>
+      </div>
+    </div>
+    <ol class="list" id="the-list"></ol>
+    <p class="likes" id="likes" aria-live="polite"></p>
+  </section>
+
+  <!-- The bigger pieces. The list links into each one. -->
+  <div class="rooms">
+    <section class="room" id="work" data-name="The work">
+      <header class="room-head"><h2 class="riso-h" data-text="The work">The work</h2></header>
+      <div id="work-box"></div>
+    </section>
+    <section class="room" id="clippings" data-name="Writing">
+      <header class="room-head"><h2 class="riso-h" data-text="Clippings">Clippings</h2></header>
+      <div class="clip-filters" id="clip-filters" role="toolbar" aria-label="Show clippings from"></div>
+      <div class="clips" id="clips"></div>
+      <div class="press"><h3 class="sub-h">Other people’s clippings</h3><ul id="press"></ul></div>
+    </section>
+    <section class="room" id="drawings" data-name="Drawings">
+      <header class="room-head">
+        <h2 class="riso-h" data-text="Every Hall of Famer">Every Hall of Famer</h2>
+        <p class="room-dek" id="hof-intro"></p>
+      </header>
+      <div class="wall" id="hof"></div>
+      <h3 class="sub-h">Not baseball (mostly)</h3>
+      <div class="wall small" id="sketchbook"></div>
+    </section>
+    <section class="room" id="playlists" data-name="Playlists">
+      <header class="room-head"><h2 class="riso-h" data-text="Playlists about feelings">Playlists about feelings</h2></header>
+      <div class="covers" id="covers"></div>
+    </section>
+    <section class="room" id="career" data-name="Career">
+      <header class="room-head"><h2 class="riso-h" data-text="The back of my baseball card">The back of my baseball card</h2></header>
+      <div class="card-wrap" id="bbcard"></div>
+    </section>
+  </div>
+
+  <footer class="hi" id="hi">
+    <p class="hi-big">Say hi.</p>
+    <p class="hi-msg" id="hi-msg"></p>
+    <p class="hi-mail"><a id="hi-mail"></a> <button class="copy" id="copy">copy</button></p>
+    <ul class="hi-links" id="hi-links"></ul>
+    <p class="hi-foot" id="foot-line"></p>
+  </footer>
+</main>
+
+<div class="peek" id="peek" aria-hidden="true"><img alt=""></div>
+<dialog class="liner" id="liner" aria-label="About this piece of work"></dialog>
+<dialog class="lightbox" id="lightbox" aria-label="A closer look"></dialog>
+<div class="flash" id="flash" aria-hidden="true"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="content/content.js"></script>
+<script src="content/list.js"></script>
+<script src="content/playlists.js"></script>
+<script src="content/shoebox.js"></script>
+<script src="content/clips/index.js"></script>
+<script src="assets/site.js"></script>
+</body>
+</html>

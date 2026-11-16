@@ -1,0 +1,29 @@
+# The record crate. One Spotify playlist per line:
+#   link | year | a line about it
+# Then run:  node tools/playlists.mjs
+# It fetches each title and cover from Spotify and writes site/content/playlists.js.
+# Order here is the order in the crate. Lines starting with # are skipped.
+# These came from your old Tumblr posts, and the notes are your own words from then.
+
+https://open.spotify.com/playlist/75BtXdY8McxsGT6Ab7LxNP | 2015 | Songs from Austin (more or less) that sound like Austin to me. I’ve seen most of these artists live, and some of them (Spoon, Okkervil River, Kelly Willis) at least 20 times.
+https://open.spotify.com/playlist/0CACen0O1EEG8PixwuJ7V8 | 2014 | My favorite songs EVER.
+https://open.spotify.com/playlist/6FGYSkhWBIJA8Lkqx1dEjz | 2012 | About leaving Texas and moving to New York. Listen in order.
+https://open.spotify.com/playlist/6JQWKIQNfUZCu6EywACUPA | 2014 | Songs that belong on tapes for cool girls.
+https://open.spotify.com/playlist/6X1c1V8Xuqmm2ENDcXGFJF | 2011 | About Omaha, a city I hold very close to my heart despite (because?) never having been there.
+https://open.spotify.com/playlist/40vaInFTrXTtqpxttvz7o8 | 2014 | A mix about flirty favs and internet crushes. ;)
+https://open.spotify.com/playlist/2q8gySVqCjYMOpUGLVTByc | 2014 | Alternate title: songs to crush to.
+https://open.spotify.com/playlist/4PAStceZrDVRdJbn2Ta1Eo | 2014 | Old soul that sounds punk as hell. Start with Mary Wells, who wrote “Bye Bye Baby” herself at seventeen.
+https://open.spotify.com/playlist/4NutFr7kQTfSumJZdgRqNg | 2014 | Retro feminism.
+https://open.spotify.com/playlist/0o6aM39IMEgIeFEJjKO7cf | 2013 | All those feels we shove in a dusty box in the corner of our brains. You know the ones!
+https://open.spotify.com/playlist/4E1K3AFJdKkDSWwXmVldd2 | 2012 | A bittersweet soundtrack to my ’90s memories. Title courtesy of Max in Kicking and Screaming.
+https://open.spotify.com/playlist/7FZw9I9YrPj5KlFUMbuZ4w | 2014 | New country that rules.
+https://open.spotify.com/playlist/0v1ARlLOkqngKtfYzOUQyv | 2014 | Classic country and outlaw stuff.
+https://open.spotify.com/playlist/4ODrrRNSUE8VBvcG8gxXHY | 2014 | For a month in L.A.
+https://open.spotify.com/playlist/7GBL45XqNxMmFC4xYuJTsc | 2013 | For the walk home from the Bedford-Nostrand G stop.
+https://open.spotify.com/playlist/6MNvbrpJVMYOUTE6KEGxPB | 2012 | A lazy, air-conditioned, catching-up-on-TV, afternoon-nap kind of summer mix.
+https://open.spotify.com/playlist/3te21l7UsspHunPoLuGnbk | 2015 | Sometimes when I’m feeling a bunch of stuff all at once, I have to make a mixtape about it.
+https://open.spotify.com/playlist/75atqGtizVDojINYczdd0f | 2013 | Gals singin’ their hearts out for boys is all.
+https://open.spotify.com/playlist/0ItFGzmmWDry9mhvC5Oii3 | 2012 | A nostalgic fall bike-riding playlist.
+https://open.spotify.com/playlist/70nrS76TKa3JCqQAU4NUbA | 2014 | 97 of the 100 songs I loved that year.
+https://open.spotify.com/playlist/6xTq4EJ65LCtjDdWgm8qxU | 2013 | All the songs from 2013 I loved the most.
+https://open.spotify.com/playlist/1D2wqS3o53Iv8Cko3tcbvY | 2012 | One song per artist, the ones I played the most.

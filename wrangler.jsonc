@@ -1,0 +1,10 @@
+// summeranneburton.com on Cloudflare. It's a plain static site: Cloudflare serves the files in
+// site/ and nothing runs on a server. HOSTING.md walks through putting it online.
+{
+  "name": "summeranneburton",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./site",
+    "not_found_handling": "404-page"
+  }
+}
