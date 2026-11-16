@@ -287,15 +287,20 @@ window.SAB = {
     year: "2014–2016",
     images: [
       {
-        src: "media/work/that-one-coworker.jpg",
-        alt: "Summer in a cow print shirt next to a giant cardboard cat fort",
-        caption: "We Built The World’s Greatest Cat Fort. Concept by Jack Shepherd, directed by Jesse McLaren."
+        src: "media/work/whine-about-it.jpg",
+        alt: "Matt Bellassai at his desk at BuzzFeed with a glass of wine",
+        caption: "Types Of Co-Workers That Are The Absolute Worst: Whine About It. BuzzFeedVideo."
       }
     ],
     words: [
       "Produced our first hit Facebook video series (That One Coworker; Whine About It); appeared as ‘da boss."
     ],
-    links: []
+    links: [
+      {
+        label: "The episode on YouTube",
+        url: "https://www.youtube.com/watch?v=6HwqScn9fHM"
+      }
+    ]
   },
   {
     id: "tell-show",
@@ -418,10 +423,6 @@ window.SAB = {
     [
       "Plays",
       "Drums"
-    ],
-    [
-      "Diet",
-      "Vegan"
     ],
     [
       "Team",
@@ -723,24 +724,6 @@ window.SAB = {
     url: "https://www.buzzfeed.com/summeranne/what-vine-did-for-us"
   },
   {
-    slug: "its-easier-to-laugh-at-peta",
-    title: "It’s Easier To Laugh At PETA Than It Is To Admit Your Meat Habit Is Messed Up",
-    outlet: "BuzzFeed News",
-    date: "2018-12-07",
-    kind: "Opinion",
-    dek: "Deep down, most people know the way animals are treated by factory farms is morally indefensible.",
-    url: "https://www.buzzfeednews.com/article/summeranne/its-easier-to-laugh-at-peta-than-it-is-to-admit-your-meat"
-  },
-  {
-    slug: "morality-didnt-turn-people-vegan",
-    title: "Vegans Couldn’t Convince People To Give Up On Meat, But Maybe Capitalism Will",
-    outlet: "BuzzFeed News",
-    date: "2019-09-29",
-    kind: "Opinion",
-    dek: "Plant-based burgers are getting lots of love from Wall Street. It puts old-school vegans like me in a tough spot.",
-    url: "https://www.buzzfeednews.com/article/summeranne/morality-didnt-turn-people-vegan-capitalism-might"
-  },
-  {
     slug: "the-33-best-forgotten-teen-shows-of-the-90s",
     title: "The 33 Best Forgotten Teen Shows Of The ’90s",
     outlet: "BuzzFeed",
@@ -871,12 +854,6 @@ window.SAB = {
     year: "2016",
     title: "BuzzFeed Names Its First Executive Creative Producer",
     url: "https://www.adweek.com/brand-marketing/omg-buzzfeed-names-its-first-creative-executive-producer-169881/"
-  },
-  {
-    outlet: "Austin Chronicle",
-    year: "2019",
-    title: "Vegan Magazine Founder Summer Burton Talks Reason and Queso",
-    url: "https://www.austinchronicle.com/food/vegan-magazine-founder-summer-burton-talks-reason-and-queso-11675325/"
   }
 ]
 };

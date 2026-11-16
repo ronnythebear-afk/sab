@@ -189,10 +189,6 @@ window.CLIP = {
   },
   {
    "t": "p",
-   "html": "A list of reasons that you should go vegetarian"
-  },
-  {
-   "t": "p",
    "html": "A description of my imaginary perfect boyfriend, Jimmy Tony"
   },
   {

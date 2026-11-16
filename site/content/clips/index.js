@@ -24,18 +24,6 @@ window.SAB_CLIPS = {
     "pics": 0,
     "pic": ""
   },
-  "its-easier-to-laugh-at-peta": {
-    "title": "It’s Easier To Laugh At PETA Than It Is To Admit Your Meat Habit Is Messed Up",
-    "words": 1532,
-    "pics": 1,
-    "pic": "media/clips/its-easier-to-laugh-at-peta/01.jpg"
-  },
-  "morality-didnt-turn-people-vegan": {
-    "title": "Vegans Couldn’t Convince People To Give Up On Meat, But Maybe Capitalism Will",
-    "words": 1291,
-    "pics": 2,
-    "pic": "media/clips/morality-didnt-turn-people-vegan/01.jpg"
-  },
   "princess-monster-truck": {
     "title": "The Future Is Here And Her Name Is Princess Monster Truck",
     "words": 315,

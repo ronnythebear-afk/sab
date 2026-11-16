@@ -11,10 +11,6 @@ window.CLIP = {
  "blocks": [
   {
    "t": "p",
-   "html": "[ INSERT 5 ]"
-  },
-  {
-   "t": "p",
    "html": "I&#39;m not what most people would call a gamer. I&#39;ve played console games only here and there, and I&#39;ve never installed a game on my computer. Truth be told, the one game I play on a regular basis involves smashing candy on my iPhone. There&#39;s really only been a single exception in my adult life. In 2012, every day, for months, I played <i>Skyrim</i>."
   },
   {
@@ -99,10 +95,6 @@ window.CLIP = {
   },
   {
    "t": "p",
-   "html": "[ INSERT 2 ]"
-  },
-  {
-   "t": "p",
    "html": "<b>Day One, 1:30 p.m.:</b>"
   },
   {
@@ -144,10 +136,6 @@ window.CLIP = {
   {
    "t": "p",
    "html": "<b>Day One, 2:15 p.m.:</b>"
-  },
-  {
-   "t": "p",
-   "html": "<b>[ INSERT 7 ]</b>"
   },
   {
    "t": "p",
@@ -243,14 +231,6 @@ window.CLIP = {
   },
   {
    "t": "p",
-   "html": "Doesn&#39;t this game know I&#39;m vegan?"
-  },
-  {
-   "t": "p",
-   "html": "[ INSERT 6 ]"
-  },
-  {
-   "t": "p",
    "html": "<b>Day One, 8:06 p.m.:</b>"
   },
   {
@@ -304,10 +284,6 @@ window.CLIP = {
   {
    "t": "p",
    "html": "<b>Day…Two? 12:07 a.m.:</b>"
-  },
-  {
-   "t": "p",
-   "html": "<b>[ INSERT 3 ]</b>"
   },
   {
    "t": "p",
@@ -427,10 +403,6 @@ window.CLIP = {
   },
   {
    "t": "p",
-   "html": "<b>[ INSERT 8 ]</b>"
-  },
-  {
-   "t": "p",
    "html": "I basically am treating <i>ESO</i> as meditation, logging on primarily to relax. I’m level nine now, and moving through quests often, but I can’t stress enough how often I stop in the woods and just stare at the cherry blossoms. I like that there was so much work put into making the “natural” world of the game so beautiful. I feel like <i>ESO</i>’s creators really share my values — nature, cooking, drinking beer, crafting, animals, and friendship."
   },
   {
@@ -468,10 +440,6 @@ window.CLIP = {
   {
    "t": "p",
    "html": "In some ways, <i>Elder Scrolls Online</i> is so much like <i>Skyrim</i> that it feels like déjà vu. Still, the online part is starting to grow on me. The other day when I was questing with my friend in Tamriel and we were running through the green hills of Auridon, his character stopped and stared at this parrot perched on a tree. Cherry blossoms and weird-shaped mountains in the distance, he whispered into my chat window: “This game is so pretty.” I was alone on my couch, but we were both looking at the same beautiful world."
-  },
-  {
-   "t": "p",
-   "html": "[ INSERT 1 ]"
   },
   {
    "t": "img",

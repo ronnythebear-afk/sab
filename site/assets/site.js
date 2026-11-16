@@ -34,7 +34,7 @@
     const drawn = ['nolan-ryan', 'willie-mays', 'satchel-paige', 'rollie-fingers', 'hilton-smith', 'ted-williams'];
     (small ? drawn.slice(0, 2) : drawn).forEach(id => { const d = S.hof.drawings.find(x => x[0] === id); if (d) T.push({ type: 'drawing', group: 'drawings', id, name: d[1], year: d[2], w: 150, h: 192 }); });
 
-    const clips = ['the-year-without-esme', 'crush-mixtapes', 'social-networking-a-love-story', 'its-easier-to-laugh-at-peta', 'prompting-creativity', 'the-33-best-forgotten-teen-shows-of-the-90s'];
+    const clips = ['the-year-without-esme', 'crush-mixtapes', 'social-networking-a-love-story', 'what-vine-did-for-us', 'prompting-creativity', 'the-33-best-forgotten-teen-shows-of-the-90s'];
     (small ? clips.slice(0, 3) : clips).forEach(slug => { const c = S.clippings.find(x => x.slug === slug); if (c && CLIPS[slug]) T.push({ type: 'clip', group: 'writing', slug, c, w: 216, h: 156 }); });
 
     PLAYLISTS.slice(0, small ? 3 : 6).forEach((p, i) => T.push({ type: 'record', group: 'playlists', i, w: 128, h: 128 }));
@@ -91,12 +91,12 @@
   let stacked = false;
   function build() {
     k = scaleFor(T);
-    const probe = document.createElement('canvas').getContext('2d');
+    const probe = document.createElement('canvas').getContext('2d'), ref = document.createElement('canvas').getContext('2d');
     // How wide the name is at this size. If it won't fit across the screen in one row, the
     // letters get smaller and the three words stack instead.
-    probe.font = '900 100px "Big Shoulders Display"';
-    const capOf = ch => (probe.measureText(ch).actualBoundingBoxAscent || 70) / 100;
-    const wOf = ch => { const m = probe.measureText(ch); return ((m.actualBoundingBoxRight + m.actualBoundingBoxLeft) || m.width) / 100 / capOf(ch) + .06; };
+    ref.font = '900 100px "Big Shoulders Display"';
+    const capOf = ch => (ref.measureText(ch).actualBoundingBoxAscent || 70) / 100;
+    const wOf = ch => { const m = ref.measureText(ch); return ((m.actualBoundingBoxRight + m.actualBoundingBoxLeft) || m.width) / 100 / capOf(ch) + .06; };
     const words = S.name.toUpperCase().split(' ');
     const lh = 150 * k, rowW = words.join('').split('').reduce((a, ch) => a + wOf(ch) * lh + 3, 0) + lh * .9;
     let letterH = lh, wordH = [];
@@ -273,13 +273,22 @@
     });
   }
 
-  // A photo booth strip that's tapped goes off again: flash, four new pictures.
+  // A photo booth strip that's tapped goes off again: four new pictures, one at a time,
+  // each with its own flash, the way a real booth takes them.
   function newStrip(t, el) {
-    const f = $('#flash');
-    if (!reduced) { f.classList.remove('go'); void f.offsetWidth; f.classList.add('go'); }
-    const pics = shuffle(FACES).slice(0, 4).map(x => x.src);
-    t.pics = pics;
-    setTimeout(() => { $$('img', el).forEach((img, i) => { img.src = pics[i]; }); }, 120);
+    if (el.dataset.busy) return;
+    el.dataset.busy = '1';
+    const imgs = $$('img', el), now = imgs.map(i => i.getAttribute('src'));
+    const pics = shuffle(FACES.map(x => x.src).filter(src => !now.includes(src))).concat(shuffle(now)).slice(0, imgs.length);
+    if (t) t.pics = pics;
+    const f = $('#flash'), gap = reduced ? 0 : 520;
+    imgs.forEach((img, i) => setTimeout(() => {
+      if (!reduced) { f.classList.remove('go'); void f.offsetWidth; f.classList.add('go'); }
+      img.classList.remove('snap'); void img.offsetWidth;
+      img.src = pics[i];
+      if (!reduced) img.classList.add('snap');
+      if (i === imgs.length - 1) setTimeout(() => { delete el.dataset.busy; }, 300);
+    }, 250 + i * gap));
   }
 
   /* tilting a phone moves the pile */
@@ -307,24 +316,88 @@
     const groups = [['work', 'Work', '#work'], ['writing', 'Writing', '#clippings'], ['drawings', 'Drawings', '#drawings'], ['playlists', 'Playlists', '#playlists']];
     tidyView.innerHTML = `<div class="t-name">${S.name.split(' ').map((_, wi) => `<span class="t-word" data-w="${wi}"></span>`).join('')}</div>
       <p class="t-role">${esc(S.role)} · ${esc(S.city)}</p>
-      <div class="t-row t-me" data-g="me"></div>
+      <div class="t-me"><div class="t-strips" data-g="strips"></div><div class="t-row t-cards" data-g="me"></div></div>
       ${groups.map(([g, l, href]) => `<section class="t-group"><a class="t-head" href="${href}">${l} →</a><div class="t-row" data-g="${g}"></div></section>`).join('')}`;
   }
+  // In Tidy the strips fill a whole row. The ones from the pile slide in, more print out
+  // after them, and each strip is a reel of faces in hair-color order: moving across a
+  // strip, or scrolling the page, rolls it on a picture. Tapping one takes four new ones.
+  const N = FACES.length;
+  function booth() {
+    const row = $('.t-strips', tidyView);
+    const strips = items.filter(it => it.t.type === 'strip');
+    if (!row || !strips.length || !N) return;
+    FACES.forEach(f => { new Image().src = f.src; });
+    const w = strips[0].w, h = strips[0].h, gap = parseFloat(getComputedStyle(row).columnGap) || 14;
+    const fit = Math.max(strips.length, Math.floor((row.clientWidth + gap) / (w + gap)));
+    for (let i = strips.length; i < fit; i++) {
+      const el = document.createElement('button');
+      el.className = 'o o-strip t-extra';
+      el.setAttribute('aria-label', 'Photo booth strip');
+      el.style.width = w + 'px'; el.style.height = h + 'px';
+      el.style.animationDelay = (reduced ? 0 : 700 + (i - strips.length) * 140) + 'ms';
+      el.innerHTML = `<span class="in">${[0, 1, 2, 3].map(() => '<img src="" alt="" draggable="false">').join('')}</span>`;
+      row.appendChild(el);
+    }
+    $$('.o-strip', row).forEach((el, i) => {
+      el.style.setProperty('--r', rand(-2.4, 2.4).toFixed(2) + 'deg');
+      el.dataset.pos = (i * 4 + Math.floor(rand(0, 3))) % N;
+      if (el.classList.contains('t-extra')) reel(el, 0);
+    });
+  }
+  function reel(el, by) {
+    if (el.dataset.busy) return;
+    const pos = (+el.dataset.pos + by + N) % N;
+    el.dataset.pos = pos;
+    $$('img', el).forEach((img, j) => { img.src = FACES[(pos + j) % N].src; });
+    const it = items.find(i => i.el === el);
+    if (it) it.t.pics = $$('img', el).map(img => img.getAttribute('src'));
+  }
+  let rolled = 0, lastY = 0;
+  tidyView.addEventListener('pointermove', e => {
+    if (!tidy || e.pointerType !== 'mouse') return;
+    const el = e.target.closest('.t-strips .o-strip');
+    if (!el) return;
+    rolled += Math.abs(e.movementX) + Math.abs(e.movementY);
+    if (rolled > 26) { rolled = 0; reel(el, e.movementY < 0 ? -1 : 1); }
+  });
+  addEventListener('scroll', () => {
+    if (!tidy) return;
+    const y = scrollY, strips = $$('.t-strips .o-strip', tidyView);
+    if (!strips.length || Math.abs(y - lastY) < 30) return;
+    const dir = y > lastY ? 1 : -1, steps = Math.floor(Math.abs(y - lastY) / 30);
+    lastY = y;
+    for (let n = 0; n < Math.min(steps, strips.length); n++) reel(strips[Math.floor(rand(0, strips.length))], dir);
+  }, { passive: true });
+  // Everything in Tidy opens the same way it does in the pile. Letters jump.
+  tidyView.addEventListener('click', e => {
+    const el = e.target.closest('.o');
+    if (!el || !tidy) return;
+    const it = items.find(i => i.el === el);
+    if (el.classList.contains('o-strip')) { newStrip(it && it.t, el); return; }
+    if (!it) return;
+    if (it.t.type === 'letter') { if (!reduced) el.animate([{ translate: '0 0' }, { translate: '0 -22%' }, { translate: '0 0' }], { duration: 420, easing: 'cubic-bezier(.3, .7, .4, 1)' }); return; }
+    open(it.t, el);
+  });
+
   function setTidy(on) {
     if (on === tidy) return;
     const first = new Map(items.map(it => [it, it.el.getBoundingClientRect()]));
     if (on) {
-      tidy = true; running = false;
+      tidy = true; running = false; lastY = scrollY;
       tidyLayout();
       tidyView.hidden = false;
       document.body.classList.add('is-tidy');
       items.forEach(it => {
         it.el.hidden = false;
-        const box = it.t.type === 'letter' ? $(`.t-word[data-w="${it.t.word}"]`, tidyView) : $(`.t-row[data-g="${it.t.group}"]`, tidyView);
+        const box = it.t.type === 'letter' ? $(`.t-word[data-w="${it.t.word}"]`, tidyView)
+          : it.t.type === 'strip' ? $('.t-strips', tidyView) : $(`.t-row[data-g="${it.t.group}"]`, tidyView);
         box.appendChild(it.el);
         it.el.style.transform = '';
       });
+      booth();
       flip(first, it => it.body ? it.body.angle : 0);
+      setTimeout(() => { if (tidy) items.forEach(it => { it.el.style.transition = ''; }); }, 1500);
     } else {
       // Back to the pile: everything drops from where it sits now.
       window.scrollTo(0, 0);
@@ -541,7 +614,7 @@
       <div class="bb-head"><h2>${esc(S.name)}</h2><span class="bb-pos">${esc(C.position)}</span></div>
       <div class="bb-vitals">${C.vitals.map(([k, v]) => `<span><b>${esc(k)}:</b> ${esc(v)}</span>`).join('')}</div>
       <table class="bb-table"><thead><tr><th>Year</th><th>Club</th><th>Position</th></tr></thead>
-        <tbody>${C.rows.map(r => `<tr>${r.map(c => `<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table>
+        <tbody>${C.rows.slice().reverse().map(r => `<tr>${r.map(c => `<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table>
       <div class="bb-totals">${C.totals.map(([k, v]) => `<div><small>${esc(k)}</small><b>${esc(v)}</b></div>`).join('')}</div>
       ${C.fact ? `<p class="bb-fact">${esc(C.fact)}</p>` : ''}
     </div>

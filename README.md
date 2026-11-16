@@ -43,7 +43,7 @@ They need Node 18 or newer and nothing else.
 ## Where things came from
 
 - The photo booth selfies are from Summer's own Tumblr posts, 2011 to 2015.
-- Campaign photos for the parchment paper dress, Brynn Whitfield and Paige DeSorbo are from the brands' PR Newswire announcements. Visit Tomorrow, Streak Shop and the BuzzFeed photos are from the old Squarespace site.
+- Campaign photos for the parchment paper dress, Brynn Whitfield and Paige DeSorbo are from the brands' PR Newswire announcements. Visit Tomorrow, Streak Shop and the BuzzFeed photos are from the old Squarespace site. The Whine About It still is the YouTube thumbnail for "Types Of Co-Workers That Are The Absolute Worst."
 - The Hall of Famer drawings and the other artwork are from the old Squarespace site.
 - The playlists are ones shared on Tumblr between 2011 and 2015.
 
