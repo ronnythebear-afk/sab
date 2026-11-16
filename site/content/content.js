@@ -167,7 +167,6 @@ window.SAB = {
     words: [
       "Working with Clairol has been a joy, and we recently brought the colorful fun to Palm Springs’ Splash House with Streak Shop, an airstream trailer activation that allowed consumers to try Clairol color in their hair on a weekend made for the gram. What a blast!"
     ],
-    wordsFrom: "summeranne-burton.squarespace.com, 2023",
     links: []
   },
   {
@@ -180,7 +179,6 @@ window.SAB = {
     words: [
       "The rise of generative AI means content will be cheaper than ever—which makes real creativity even more valuable."
     ],
-    wordsFrom: "Prompting Creativity, on the Praytell blog, 2023",
     links: [
       {
         label: "Read it here",
@@ -212,7 +210,6 @@ window.SAB = {
     words: [
       "VISIT TOMORROW celebrated the launch of Air New Zealand’s direct flight landing in NYC with an immersive video experience, live dancers, and natural NZ soundscape."
     ],
-    wordsFrom: "summeranne-burton.squarespace.com, 2023",
     links: [
       {
         label: "amNY",
@@ -235,7 +232,6 @@ window.SAB = {
     words: [
       "I spent seven years at BuzzFeed (2012-2019) with twice as many titles, culminating as Head of BuzzFeed Originals, managing a department of nearly 200 creatives across both editorial and marketing."
     ],
-    wordsFrom: "summeranne-burton.squarespace.com, 2023",
     quotes: [
       {
         text: "Summer helped us crack our distributed model, which has had an incredible impact on our business and the industry.",
@@ -259,7 +255,6 @@ window.SAB = {
     words: [
       "Editorially lead the BuzzFeed quiz team that changed the world of the internet for better or sillier."
     ],
-    wordsFrom: "summeranne-burton.squarespace.com, 2023",
     links: [
       {
         label: "What’s Your Animal Personality Type?",
@@ -277,7 +272,6 @@ window.SAB = {
     words: [
       "Assist in making Lil Bub and Princess Monstertruck and Marnie the Dog famous."
     ],
-    wordsFrom: "summeranne-burton.squarespace.com, 2023",
     links: [
       {
         label: "The Future Is Here And Her Name Is Princess Monster Truck",
@@ -301,7 +295,6 @@ window.SAB = {
     words: [
       "Produced our first hit Facebook video series (That One Coworker; Whine About It); appeared as ‘da boss."
     ],
-    wordsFrom: "summeranne-burton.squarespace.com, 2023",
     links: []
   },
   {
@@ -320,7 +313,6 @@ window.SAB = {
     words: [
       "Co-host “The Tell Show,” a podcast which allowed me to play Never Have I Ever with Lena Waithe AND Michael Ian Black."
     ],
-    wordsFrom: "summeranne-burton.squarespace.com, 2023",
     links: [
       {
         label: "Apple Podcasts",
@@ -339,7 +331,6 @@ window.SAB = {
       "Give keynote speeches and spoke on panels all over the world including SXSW, Cannes, and the ISOJ conference.",
       "Plan a SXSW party that had slurpees, emoji fortune-telling, caricatures, screenprinting, and “the dress.”"
     ],
-    wordsFrom: "summeranne-burton.squarespace.com, 2023",
     links: []
   },
   {
@@ -352,7 +343,6 @@ window.SAB = {
     words: [
       "I commissioned and edited over 1000 pieces in less than two years, covering recipes, environmental reporting, personal essays, travelogues, photo essays, and more from a “friendly + radical” animal-centric perspective. We developed over 30,000 subscribers on Medium and more across social channels."
     ],
-    wordsFrom: "summeranne-burton.squarespace.com, 2023",
     links: [
       {
         label: "Tenderly on Medium",
@@ -489,8 +479,7 @@ window.SAB = {
       "~200"
     ]
   ],
-  fact: "I have also been a waitress, toy store clerk, a hair salon receptionist, a writer at a now defunct website for tweens (when I was 16!), and a stablehand (my first job).",
-  factFrom: "summeranne-burton.squarespace.com, 2023"
+  fact: "I have also been a waitress, toy store clerk, a hair salon receptionist, a writer at a now defunct website for tweens (when I was 16!), and a stablehand (my first job)."
 },
 
   /* ------------------------------------------------------------------ drawings */

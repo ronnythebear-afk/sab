@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Summer Anne Burton</title>
 <meta name="description" content="Summer Anne Burton is a creative director in Austin, Texas.">
-<meta name="theme-color" content="#e0218a">
+<meta name="theme-color" content="#f7479f">
 <meta name="color-scheme" content="light">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Summer Anne Burton">
@@ -20,31 +20,30 @@
 <link rel="stylesheet" href="assets/site.css">
 </head>
 <body>
+<header class="top" id="top">
+  <nav class="top-nav" aria-label="Sections">
+    <a href="#work">Work</a><a href="#drawings">Drawings</a><a href="#clippings">Writing</a><a href="#playlists">Playlists</a><a href="#cv">CV</a><a id="top-mail">Email</a>
+  </nav>
+  <div class="top-tools" id="tools">
+    <button class="tool" id="tidy" aria-pressed="false">Tidy</button>
+    <button class="tool" id="shake">Shake</button>
+    <button class="tool" id="tilt" hidden>Tilt</button>
+  </div>
+</header>
+
 <main>
-  <!-- The front page is a photo booth. Move across it and the hair changes. -->
+  <!--
+    The front page is a pile of real things: the name in cut-out letters, photo booth strips,
+    prints from campaigns, drawings, clippings, records and two index cards. They fall in, they
+    can be picked up and thrown, and Tidy lines them all up.
+  -->
   <section class="home" id="home" aria-label="Summer Anne Burton">
-    <div class="booth">
-      <button class="stage" id="stage" aria-label="Photo booth. Move across the page to flip through photos. Click to take a picture.">
-        <img id="frame" alt="">
-        <span class="count" id="count" aria-hidden="true"></span>
-        <span class="shots" id="shots" aria-hidden="true"></span>
-      </button>
-    </div>
-    <div class="side">
-      <h1 class="nm" id="nm">Summer Anne Burton</h1>
-      <p class="role" id="role"></p>
-      <nav class="reels" id="reels" aria-label="Sections"></nav>
-      <p class="contact" id="contact"></p>
-    </div>
+    <div class="pile" id="pile"></div>
+    <div class="tidy" id="tidy-view" hidden></div>
   </section>
 
-  <aside class="strip" id="strip" hidden aria-label="Your photo booth strip"></aside>
-
-  <!-- Each frame on the front page opens one of these. -->
   <div class="rooms" id="rooms">
-    <section class="room" id="work" data-name="Work">
-      <div id="work-box"></div>
-    </section>
+    <section class="room" id="work" data-name="Work"><div id="work-box"></div></section>
     <section class="room" id="drawings" data-name="Drawings">
       <p class="room-words" id="hof-intro"></p>
       <div class="wall" id="hof"></div>
@@ -55,12 +54,8 @@
       <div class="clips" id="clips"></div>
       <div class="press"><h2 class="sub-h">Press</h2><ul id="press"></ul></div>
     </section>
-    <section class="room" id="playlists" data-name="Playlists">
-      <div id="covers"></div>
-    </section>
-    <section class="room" id="cv" data-name="CV">
-      <div class="card-wrap" id="bbcard"></div>
-    </section>
+    <section class="room" id="playlists" data-name="Playlists"><div id="covers"></div></section>
+    <section class="room" id="cv" data-name="CV"><div class="card-wrap" id="bbcard"></div></section>
   </div>
 </main>
 
@@ -72,6 +67,7 @@
 <script src="content/faces.js"></script>
 <script src="content/playlists.js"></script>
 <script src="content/clips/index.js"></script>
+<script src="assets/vendor/matter.min.js"></script>
 <script src="assets/site.js"></script>
 </body>
 </html>

@@ -1,8 +1,10 @@
 # summeranneburton.com
 
-Summer's website. The front page is a photo booth: moving across the page flips through her selfies in hair-color order, and the page takes on each photo's color. Clicking takes a picture, and four pictures print a strip that can be saved. The four small frames (Work, Drawings, Writing, Playlists) lead to everything else, and pointing at one runs its pictures through the booth.
+Summer's website. The front page is a pile on hot pink. Her name lands first in cut-out letters, then everything else falls on top of it: photo booth strips, prints from campaigns, index cards, Hall of Famer drawings, clippings and playlist covers. Anything can be picked up and thrown. Tapping a thing opens it, and tapping a photo booth strip takes four new pictures. Tidy lines it all up in rows, Mess drops it again, Shake throws it in the air, and on a phone Tilt lets gravity follow the phone.
 
-Nothing on the site is written for her. Text is a plain fact (a name, a client, a year), her own words with where they came from, or a quote from coverage with who said it.
+Nothing on the site is written for her. Text is a plain fact (a name, a client, a year), her own words, or a quote from coverage with who said it.
+
+The physics is Matter.js, kept in `site/assets/vendor/`.
 
 There's no build step. The site is the `site/` folder, as is.
 
@@ -14,12 +16,13 @@ npx serve site
 
 ## Change what it says
 
-- `site/content/content.js` has the work, the CV, the drawings, the writing and your links. Each piece of work can have `words` (yours, with `wordsFrom`) and `quotes` (other people's, with `who`). Lines marked `CHECK` are things found on the web to confirm.
-- `site/content/faces.js` is the photo booth, made by `tools/faces.py`.
+- `site/content/content.js` has the work, the CV, the drawings, the writing and your links. Each piece of work can have `words` (yours) and `quotes` (other people's, with `who`). Lines marked `CHECK` are things found on the web to confirm.
+- `site/content/faces.js` is the photo booth pictures, made by `tools/faces.py`.
+- What lands in the pile is picked in `things()` at the top of `site/assets/site.js`, by id.
 - `site/content/playlists.js` is the playlists, made by `tools/playlists.mjs` from `playlists.txt`.
 - `lookingForWork` and `lookingLine` in content.js are off and empty. They're for when you want to say you're looking, in your own words.
 
-## Adding photos to the photo booth
+## Adding photos to the photo booth strips
 
 Selfies work best when the face is clear and fills a good part of the frame. Put them in a folder and run:
 
@@ -28,7 +31,7 @@ pip install "opencv-python-headless<5" pillow
 python3 tools/faces.py path/to/folder
 ```
 
-It finds each face, crops a square so every face lands in about the same spot, and sorts them by hair color. If it gets a face wrong, or picks the wrong color, fix it in a `faces-fix.json` in the same folder (the top of `tools/faces.py` explains, and `tools/faces-fix.example.json` is the file used for the first 18). New photos are added to the ones already in the booth. To take one out, delete its line from faces.js.
+It finds each face, crops a square so every face lands in about the same spot, and notes the hair color. If it gets a face wrong, or picks the wrong color, fix it in a `faces-fix.json` in the same folder (the top of `tools/faces.py` explains, and `tools/faces-fix.example.json` is the file used for the first 18). New photos are added to the ones already there. To take one out, delete its line from faces.js.
 
 ## The other tools
 

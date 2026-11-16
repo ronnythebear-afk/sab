@@ -1,8 +1,8 @@
 /*
-  The front page is a photo booth: move across the page and it flips through Summer's
-  selfies, in hair-color order, and the page takes on each one's color. Click to take a
-  picture; four pictures print a strip you can keep. The four small frames are the way in
-  to everything else, and pointing at one runs its pictures through the booth instead.
+  The front page is a pile of real things: the name in cut-out letters, photo booth strips,
+  prints from the work, drawings, clippings, records, and index cards for the CV and email.
+  Everything falls in with real weight (Matter.js does the physics; the things themselves
+  are ordinary HTML), can be picked up and thrown, and Tidy lines it all up, name first.
 */
 (function () {
   const S = window.SAB;
@@ -11,140 +11,393 @@
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', '\'': '&#39;' }[c]));
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  const rand = (a, b) => a + Math.random() * (b - a);
   const FACES = window.SAB_FACES || [], PLAYLISTS = window.SAB_PLAYLISTS || [], CLIPS = window.SAB_CLIPS || {};
-  const root = document.documentElement;
+  const M = window.Matter;
+  const work = id => S.work.find(w => w.id === id);
+  $('#top-mail').href = `mailto:${S.email}`;
 
-  // Black or white type, whichever reads better on a color.
-  const ink = hex => { const n = parseInt(hex.slice(1), 16), r = n >> 16 & 255, g = n >> 8 & 255, b = n & 255; return (0.299 * r + 0.587 * g + 0.114 * b) > 150 ? '#141213' : '#ffffff'; };
-  const paint = hex => { root.style.setProperty('--bg', hex); root.style.setProperty('--fg', ink(hex)); $('meta[name="theme-color"]').content = hex; };
+  /* ------------------------------------------------------------------ what's in the pile */
+  // w and h are sizes at full scale. Each thing knows how to draw itself and what opening it does.
+  function things(small) {
+    const T = [];
+    S.name.toUpperCase().split(' ').forEach((word, wi) => [...word].forEach(ch => T.push({ type: 'letter', ch, word: wi, h: 150 })));
 
-  /* ------------------------------------------------------------------ reels */
-  // What each small frame on the front page holds, and where it goes.
-  const REELS = [
-    { id: 'work', label: 'Work', fit: 'cover', pics: S.work.flatMap(w => (w.images || []).slice(0, 1).map(i => i.src)) },
-    { id: 'drawings', label: 'Drawings', fit: 'contain', pics: S.hof.drawings.map(d => `media/hof/${d[0]}.jpg`) },
-    { id: 'clippings', label: 'Writing', fit: 'cover', pics: Object.values(CLIPS).map(c => c.pic).filter(Boolean) },
-    { id: 'playlists', label: 'Playlists', fit: 'cover', pics: PLAYLISTS.map(p => p.cover) }
-  ];
-  const faceReel = { id: 'faces', fit: 'cover', pics: FACES.map(f => f.src) };
+    const faces = shuffle(FACES);
+    for (let s = 0; s < (small ? 2 : 4); s++) T.push({ type: 'strip', group: 'me', w: 96, h: 386, pics: [0, 1, 2, 3].map(k => faces[(s * 4 + k) % faces.length].src) });
 
-  /* ------------------------------------------------------------------ the booth */
-  const frame = $('#frame'), stage = $('#stage');
-  let reel = faceReel, at = Math.floor(FACES.length * .55), lastMove = 0;
-  const preload = srcs => srcs.forEach(s => { const i = new Image(); i.src = s; });
-  preload(faceReel.pics);
-  setTimeout(() => REELS.forEach(r => preload(r.pics.slice(0, 12))), 1500);
+    const prints = ['paper-dress', 'visit-tomorrow', 'summer-villa', 'dolce-delivery', 'streak-shop', 'tell-show', 'video', 'originals'];
+    const cards = ['she-does', 'daisy-jones', 'ai-at-praytell', 'tenderly'];
+    (small ? prints.slice(0, 4) : prints).forEach(id => { const w = work(id); if (w) T.push({ type: 'print', group: 'work', id, w: 170, h: 250, src: w.images[0].src, title: w.title }); });
+    (small ? cards.slice(0, 2) : cards).forEach(id => { const w = work(id); if (w) T.push({ type: 'card', group: 'work', id, w: 236, h: 150, title: w.title, meta: `${w.client} · ${w.year}` }); });
 
-  function show(i) {
-    if (!reel.pics.length) return;
-    at = (i + reel.pics.length) % reel.pics.length;
-    frame.src = reel.pics[at];
-    frame.style.objectFit = reel.fit;
-    stage.classList.toggle('paper', reel.fit === 'contain');
-    if (reel === faceReel && FACES[at]) paint(FACES[at].color);
-    $('#count').textContent = `${String(at + 1).padStart(2, '0')}/${String(reel.pics.length).padStart(2, '0')}`;
+    const drawn = ['nolan-ryan', 'willie-mays', 'satchel-paige', 'rollie-fingers', 'hilton-smith', 'ted-williams'];
+    (small ? drawn.slice(0, 2) : drawn).forEach(id => { const d = S.hof.drawings.find(x => x[0] === id); if (d) T.push({ type: 'drawing', group: 'drawings', id, name: d[1], year: d[2], w: 150, h: 192 }); });
+
+    const clips = ['the-year-without-esme', 'crush-mixtapes', 'social-networking-a-love-story', 'its-easier-to-laugh-at-peta', 'prompting-creativity', 'the-33-best-forgotten-teen-shows-of-the-90s'];
+    (small ? clips.slice(0, 3) : clips).forEach(slug => { const c = S.clippings.find(x => x.slug === slug); if (c && CLIPS[slug]) T.push({ type: 'clip', group: 'writing', slug, c, w: 216, h: 156 }); });
+
+    PLAYLISTS.slice(0, small ? 3 : 6).forEach((p, i) => T.push({ type: 'record', group: 'playlists', i, w: 128, h: 128 }));
+
+    T.push({ type: 'card', group: 'me', id: 'cv', w: 236, h: 150, title: 'CV', meta: S.card.rows.slice().reverse().slice(0, 3).map(r => r[1]).join(' · ') });
+    T.push({ type: 'card', group: 'me', id: 'email', w: 236, h: 150, title: 'Email', meta: S.email });
+    return T;
   }
 
-  // Moving across the page flips through the reel, left to right.
-  const home = $('#home');
-  home.addEventListener('pointermove', e => {
-    if (e.pointerType === 'touch') return;
-    lastMove = Date.now();
-    const i = Math.min(reel.pics.length - 1, Math.floor(e.clientX / innerWidth * reel.pics.length));
-    if (i !== at) show(i);
-  });
-  // On a phone, drag sideways across the photo.
-  let dragX = null, dragAt = 0, dragged = false;
-  stage.addEventListener('pointerdown', e => { dragged = false; if (e.pointerType === 'touch') { dragX = e.clientX; dragAt = at; lastMove = Date.now(); } });
-  stage.addEventListener('pointermove', e => {
-    if (dragX === null) return;
-    lastMove = Date.now();
-    const step = Math.round((e.clientX - dragX) / 22);
-    if (step) dragged = true;
-    if (dragAt + step !== at) show(dragAt + step);
-  });
-  ['pointerup', 'pointercancel'].forEach(t => stage.addEventListener(t, () => { dragX = null; }));
-  document.addEventListener('keydown', e => {
-    if (!home.offsetParent) return;
-    if (e.key === 'ArrowRight') { lastMove = Date.now(); show(at + 1); }
-    if (e.key === 'ArrowLeft') { lastMove = Date.now(); show(at - 1); }
-  });
-  // Left alone, the booth keeps going on its own.
-  if (!reduced) setInterval(() => { if (home.offsetParent && Date.now() - lastMove > 2200) show(at + 1); }, 650);
+  // The HTML for each thing. Sizes inside use cqw, so everything scales with the thing.
+  function html(t) {
+    if (t.type === 'letter') return `<span>${esc(t.ch)}</span>`;
+    return `<span class="in">${inner(t)}</span>`;
+  }
+  function inner(t) {
+    if (t.type === 'strip') return t.pics.map(p => `<img src="${esc(p)}" alt="" draggable="false">`).join('');
+    if (t.type === 'print') return `<img src="${esc(t.src)}" alt="" draggable="false"><span class="cap">${esc(t.title)}</span>`;
+    if (t.type === 'card') return `<b>${esc(t.title)}</b><span>${esc(t.meta)}</span>`;
+    if (t.type === 'drawing') return `<img src="media/hof/${esc(t.id)}.jpg" alt="" draggable="false">`;
+    if (t.type === 'clip') return `<span class="m"><span>${esc(t.c.outlet)}</span><span>${esc((t.c.date || '').slice(0, 4))}</span></span><span class="h">${esc(t.c.title)}</span>`;
+    if (t.type === 'record') return `<img src="${esc(PLAYLISTS[t.i].cover)}" alt="" draggable="false">`;
+    return '';
+  }
+  const label = t => ({
+    letter: t.ch, strip: 'Photo booth strip', print: t.title, card: t.title, drawing: `Drawing of ${t.name}`,
+    clip: t.c && t.c.title, record: PLAYLISTS[t.i] && `Playlist: ${PLAYLISTS[t.i].title}`
+  }[t.type] || '');
 
-  /* taking pictures */
-  const SHOTS = 4;
-  let shots = [];
-  const flash = () => { if (reduced) return; const f = $('#flash'); f.classList.remove('go'); void f.offsetWidth; f.classList.add('go'); };
-  const dots = () => { $('#shots').innerHTML = Array.from({ length: SHOTS }, (_, k) => `<i class="${k < shots.length ? 'on' : ''}"></i>`).join(''); };
-  stage.addEventListener('click', () => {
-    if (reel !== faceReel) { location.hash = reel.id; return; }
-    if (dragged) return;
-    flash();
-    shots.push(FACES[at]);
-    dots();
-    if (shots.length === SHOTS) setTimeout(printStrip, 450);
-  });
-
-  function printStrip() {
-    const strip = $('#strip');
-    const date = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).toUpperCase();
-    strip.innerHTML = `<div class="paper">${shots.map(s => `<img src="${esc(s.src)}" alt="">`).join('')}<span class="strip-date">${esc(date)}</span></div>
-      <div class="strip-tools"><button class="tool" id="save">Save</button><button class="tool" id="again">Again</button></div>`;
-    strip.hidden = false;
-    requestAnimationFrame(() => strip.classList.add('out'));
-    $('#save').addEventListener('click', saveStrip);
-    $('#again').addEventListener('click', () => { strip.classList.remove('out'); setTimeout(() => { strip.hidden = true; }, 400); shots = []; dots(); });
+  // What happens when something is picked up and put down without moving.
+  function open(t, el) {
+    if (t.type === 'letter') { hop(el); return; }
+    if (t.type === 'strip') { newStrip(t, el); return; }
+    if (t.type === 'print' || (t.type === 'card' && work(t.id))) { location.hash = `w/${t.id}`; return; }
+    if (t.id === 'cv') { location.hash = 'cv'; return; }
+    if (t.id === 'email') { location.href = `mailto:${S.email}`; return; }
+    if (t.type === 'drawing') { lightbox(`media/hof/${t.id}.jpg`, `${t.name}, ${t.year}`, `Summer’s drawing of ${t.name}`); return; }
+    if (t.type === 'clip') { location.href = `read.html?c=${encodeURIComponent(t.slug)}`; return; }
+    if (t.type === 'record') playlist(t.i);
   }
 
-  // The strip as a picture: four frames down a white strip, like the real thing.
-  function saveStrip() {
-    const W = 600, pad = 30, side = W - pad * 2, H = pad + SHOTS * (side + pad) + 40;
-    const c = document.createElement('canvas');
-    c.width = W; c.height = H;
-    const x = c.getContext('2d');
-    x.fillStyle = '#fbf8f1'; x.fillRect(0, 0, W, H);
-    let left = SHOTS;
-    shots.forEach((s, k) => {
-      const img = new Image();
-      img.onload = () => {
-        x.drawImage(img, pad, pad + k * (side + pad), side, side);
-        if (--left === 0) {
-          x.fillStyle = '#4a4245'; x.font = '700 18px "Space Mono", monospace'; x.textAlign = 'center';
-          x.fillText($('.strip-date').textContent, W / 2, H - 26);
-          const a = document.createElement('a');
-          a.download = 'summer-anne-burton-photo-booth.png';
-          a.href = c.toDataURL('image/png');
-          a.click();
-        }
-      };
-      img.src = s.src;
+  /* ------------------------------------------------------------------ the pile */
+  const pile = $('#pile'), tidyView = $('#tidy-view');
+  const small = innerWidth < 700;
+  const T = things(small);
+  let k = 1, engine = null, walls = [], wantCeiling = false, ceiling = null, running = false, tidy = false, z = 1000;
+  const items = []; // { t, el, body, w, h }
+
+  // Scale everything so the pile covers a bit under half the screen, whatever its size.
+  function scaleFor(list) {
+    const area = list.reduce((a, t) => a + (t.type === 'letter' ? t.h * t.h * .55 : t.w * t.h), 0);
+    return Math.max(.42, Math.min(1.2, Math.sqrt(.42 * innerWidth * innerHeight / area)));
+  }
+
+  let stacked = false;
+  function build() {
+    k = scaleFor(T);
+    const probe = document.createElement('canvas').getContext('2d');
+    // How wide the name is at this size. If it won't fit across the screen in one row, the
+    // letters get smaller and the three words stack instead.
+    probe.font = '900 100px "Big Shoulders Display"';
+    const capOf = ch => (probe.measureText(ch).actualBoundingBoxAscent || 70) / 100;
+    const wOf = ch => { const m = probe.measureText(ch); return ((m.actualBoundingBoxRight + m.actualBoundingBoxLeft) || m.width) / 100 / capOf(ch) + .06; };
+    const words = S.name.toUpperCase().split(' ');
+    const lh = 150 * k, rowW = words.join('').split('').reduce((a, ch) => a + wOf(ch) * lh + 3, 0) + lh * .9;
+    let letterH = lh, wordH = [];
+    // Shrink the row to fit if it only needs a little; stack the words if it needs a lot.
+    if (rowW > innerWidth * .9) letterH = lh * innerWidth * .9 / rowW;
+    stacked = letterH < 70;
+    if (stacked) {
+      // Stacked, each word is as tall as it can be and still fit across. Short words are
+      // held back a little and their letters spread out, so every row is the same width
+      // and holds up the one above it.
+      const fit = words.map(w => innerWidth * .9 / [...w].reduce((a, ch) => a + wOf(ch) + .02, 0));
+      const cap = Math.min(...fit) * 1.3;
+      wordH = fit.map(h => Math.min(h, cap));
+    }
+    T.forEach((t, n) => {
+      let w = t.w * k, h = t.h * k;
+      if (t.type === 'letter') {
+        // Size the letter's box to the letter itself, so the pile stacks tight. The cap
+        // height fills the box, and the glyph is shifted so its top sits on the box's top.
+        h = stacked ? wordH[t.word] : letterH;
+        const fs = h * .97 / capOf(t.ch);
+        probe.font = `900 ${fs}px "Big Shoulders Display"`;
+        const mm = probe.measureText(t.ch);
+        w = Math.max(h * .3, (mm.actualBoundingBoxRight + mm.actualBoundingBoxLeft || mm.width) + h * .06);
+        t.fs = fs;
+        t.lift = (mm.fontBoundingBoxAscent || fs * .95) - mm.actualBoundingBoxAscent - h * .015;
+      }
+      const el = document.createElement(t.type === 'letter' ? 'span' : 'button');
+      el.className = `o o-${t.type}`;
+      if (t.type === 'letter') { el.setAttribute('aria-hidden', 'true'); el.classList.toggle('white', /[AEO]/.test(t.ch) && n % 3 === 0); el.style.fontSize = t.fs + 'px'; el.style.setProperty('--lift', -t.lift + 'px'); }
+      else el.setAttribute('aria-label', label(t));
+      el.style.width = w + 'px';
+      el.style.height = h + 'px';
+      el.innerHTML = html(t);
+      el.hidden = true;
+      pile.appendChild(el);
+      items.push({ t, el, w, h, body: null });
     });
   }
 
-  /* ------------------------------------------------------------------ the side */
-  function side() {
-    $('#nm').innerHTML = S.name.split(' ').map(w => `<span>${esc(w)}</span>`).join('');
-    $('#role').textContent = `${S.role} · ${S.city}`;
-    // Each small frame keeps flipping through its own pictures, out of step with the others.
-    $('#reels').innerHTML = REELS.map((r, k) => `<a class="reel" href="#${r.id}" data-k="${k}"><span class="reel-pic ${r.fit}"><img src="${esc(r.pics[0] || '')}" alt=""></span><span class="reel-label">${esc(r.label)}</span></a>`).join('');
-    $$('.reel').forEach(a => {
-      const r = REELS[+a.dataset.k];
-      const order = shuffle(r.pics);
-      let i = 0;
-      const img = $('img', a);
-      setTimeout(() => setInterval(() => { if (home.offsetParent && !reduced) { i = (i + 1) % order.length; img.src = order[i]; } }, 1700), +a.dataset.k * 420);
-      a.addEventListener('mouseenter', () => { reel = r; show(Math.floor(Math.random() * r.pics.length)); });
-      a.addEventListener('mouseleave', () => { reel = faceReel; show(Math.floor(FACES.length / 2)); });
-    });
-    $('#contact').innerHTML = [`<a href="mailto:${esc(S.email)}">Email</a>`, '<a href="#cv">CV</a>', ...S.links.filter(l => /LinkedIn|Instagram/.test(l.label)).map(l => `<a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)}</a>`)].join('');
+  function makeWalls() {
+    if (walls.length) M.Composite.remove(engine.world, walls);
+    const W = innerWidth, H = innerHeight, o = { isStatic: true, friction: .6 };
+    walls = [M.Bodies.rectangle(W / 2, H + 60, W * 4, 120, o), M.Bodies.rectangle(-60, H / 2 - 2000, 120, H * 2 + 4000, o), M.Bodies.rectangle(W + 60, H / 2 - 2000, 120, H * 2 + 4000, o)];
+    M.Composite.add(engine.world, walls);
+    if (ceiling) M.Composite.remove(engine.world, ceiling);
+    if (wantCeiling) { ceiling = M.Bodies.rectangle(W / 2, -60, W * 4, 120, o); M.Composite.add(engine.world, ceiling); }
   }
 
-  /* ------------------------------------------------------------------ rooms */
+  function bodyFor(it, x, y, angle) {
+    const letter = it.t.type === 'letter';
+    const b = M.Bodies.rectangle(x, y, it.w, it.h, {
+      angle, chamfer: { radius: Math.min(6, it.w * .03) }, restitution: .1, frictionAir: .018, frictionStatic: .8,
+      density: letter ? .004 : .0012, friction: letter ? .9 : .55, sleepThreshold: 40
+    });
+    // Letters are heavy and hard to knock over, so the name stays readable under the pile.
+    if (letter) M.Body.setInertia(b, b.inertia * 6);
+    return b;
+  }
+  // When the name first lands, each letter holds still once it has come to rest, so the pile
+  // can't shove the letters apart. Picking a letter up, shaking or tilting lets it go again.
+  function settle(it) {
+    const b = it.body;
+    it.still = b.speed < .15 && b.angularSpeed < .01 ? (it.still || 0) + 1 : 0;
+    if (it.still > 12) { M.Body.setStatic(b, true); it.pinMe = false; }
+  }
+  const unpin = it => { it.pinMe = false; if (it.body && it.body.isStatic) M.Body.setStatic(it.body, false); };
+
+  // Everything falls in: the letters first, in order across the floor, then the rest on top.
+  function drop() {
+    const W = innerWidth, letters = items.filter(i => i.t.type === 'letter'), rest = shuffle(items.filter(i => i.t.type !== 'letter'));
+    letters.forEach(it => { it.pinMe = true; });
+    if (stacked) {
+      // Burton lands first, then Anne on top of it, then Summer on top of that.
+      let delay = 0;
+      const row = W * .9;
+      [2, 1, 0].forEach(wi => {
+        const word = letters.filter(i => i.t.word === wi);
+        const sp = word.length > 1 ? Math.max(2, (row - word.reduce((a, i) => a + i.w, 0)) / (word.length - 1)) : 0;
+        let x = (W - word.reduce((a, i) => a + i.w, 0) - sp * (word.length - 1)) / 2;
+        word.forEach(it => { const cx = x + it.w / 2; x += it.w + sp; setTimeout(() => add(it, cx, -it.h - 10, 0), delay); delay += 45; });
+        delay += 650;
+      });
+      rest.forEach((it, n) => setTimeout(() => add(it, rand(it.w / 2 + 6, W - it.w / 2 - 6), -it.h - rand(0, 300), rand(-.7, .7)), delay + 200 + n * 110));
+      return;
+    }
+    const gap = letters[0] ? letters[0].h * .45 : 40;
+    const totalW = letters.reduce((a, i) => a + i.w + 3, 0) + gap * 2;
+    let x = Math.max(4, (W - totalW) / 2);
+    letters.forEach((it, n) => {
+      if (n && it.t.word !== letters[n - 1].t.word) x += gap;
+      const cx = x + it.w / 2;
+      x += it.w + 3;
+      setTimeout(() => add(it, cx, -it.h - rand(0, 40), 0), n * 70);
+    });
+    rest.forEach((it, n) => setTimeout(() => add(it, rand(it.w / 2 + 10, W - it.w / 2 - 10), -it.h - rand(0, 300), rand(-.7, .7)), letters.length * 70 + 250 + n * 95));
+  }
+  function add(it, x, y, a) {
+    it.body = bodyFor(it, x, y, a);
+    M.Composite.add(engine.world, it.body);
+    it.el.hidden = false;
+    place(it);
+  }
+  function place(it) {
+    const b = it.body;
+    it.el.style.transform = `translate(${(b.position.x - it.w / 2).toFixed(1)}px, ${(b.position.y - it.h / 2).toFixed(1)}px) rotate(${b.angle.toFixed(4)}rad)`;
+  }
+
+  function loop() {
+    if (!running) return;
+    M.Engine.update(engine, 1000 / 60);
+    items.forEach(it => {
+      if (!it.body || it.body.isSleeping) return;
+      if (it.pinMe && !it.body.isStatic) settle(it);
+      place(it);
+    });
+    requestAnimationFrame(loop);
+  }
+  const run = () => { if (engine && !running && !tidy && !document.body.classList.contains('in-room')) { running = true; requestAnimationFrame(loop); } };
+
+  /* picking things up */
+  let grab = null;
+  pile.addEventListener('pointerdown', e => {
+    const el = e.target.closest('.o');
+    const it = el && items.find(i => i.el === el);
+    if (!it || !it.body || tidy) return;
+    e.preventDefault();
+    el.setPointerCapture(e.pointerId);
+    unpin(it);
+    M.Sleeping.set(it.body, false);
+    const p = { x: e.clientX, y: e.clientY };
+    const c = M.Constraint.create({ pointA: p, bodyB: it.body, pointB: { x: p.x - it.body.position.x, y: p.y - it.body.position.y }, stiffness: .18, damping: .08, length: 0 });
+    c.angleB = it.body.angle;
+    M.Composite.add(engine.world, c);
+    el.style.zIndex = ++z;
+    el.classList.add('held');
+    grab = { it, c, x0: p.x, y0: p.y, t0: performance.now(), moved: 0 };
+  });
+  pile.addEventListener('pointermove', e => {
+    if (!grab) return;
+    grab.c.pointA = { x: e.clientX, y: e.clientY };
+    grab.moved = Math.max(grab.moved, Math.hypot(e.clientX - grab.x0, e.clientY - grab.y0));
+  });
+  const letGo = () => {
+    if (!grab) return;
+    M.Composite.remove(engine.world, grab.c);
+    grab.it.el.classList.remove('held');
+    const tap = grab.moved < 6 && performance.now() - grab.t0 < 450;
+    const it = grab.it;
+    grab = null;
+    if (tap) open(it.t, it.el);
+  };
+  pile.addEventListener('pointerup', letGo);
+  pile.addEventListener('pointercancel', letGo);
+  // Keyboard: the things are buttons, so Enter opens them.
+  pile.addEventListener('click', e => { if (e.detail === 0) { const el = e.target.closest('.o'); const it = el && items.find(i => i.el === el); if (it) open(it.t, el); } });
+
+  function hop(el) {
+    const it = items.find(i => i.el === el);
+    if (!it || !it.body) return;
+    unpin(it);
+    M.Sleeping.set(it.body, false);
+    M.Body.setVelocity(it.body, { x: rand(-3, 3), y: -14 });
+    M.Body.setAngularVelocity(it.body, rand(-.25, .25));
+  }
+  function shake() {
+    if (tidy) setTidy(false);
+    items.forEach(it => {
+      if (!it.body) return;
+      unpin(it);
+      M.Sleeping.set(it.body, false);
+      M.Body.setVelocity(it.body, { x: rand(-14, 14), y: rand(-26, -10) });
+      M.Body.setAngularVelocity(it.body, rand(-.35, .35));
+    });
+  }
+
+  // A photo booth strip that's tapped goes off again: flash, four new pictures.
+  function newStrip(t, el) {
+    const f = $('#flash');
+    if (!reduced) { f.classList.remove('go'); void f.offsetWidth; f.classList.add('go'); }
+    const pics = shuffle(FACES).slice(0, 4).map(x => x.src);
+    t.pics = pics;
+    setTimeout(() => { $$('img', el).forEach((img, i) => { img.src = pics[i]; }); }, 120);
+  }
+
+  /* tilting a phone moves the pile */
+  function tilt() {
+    const on = e => {
+      if (e.gamma == null) return;
+      engine.gravity.x = Math.max(-1, Math.min(1, e.gamma / 35));
+      engine.gravity.y = Math.max(-1, Math.min(1, e.beta / 35));
+      items.forEach(it => it.body && M.Sleeping.set(it.body, false));
+    };
+    const start = () => {
+      if (!wantCeiling) { wantCeiling = true; makeWalls(); }
+      items.forEach(unpin);
+      addEventListener('deviceorientation', on);
+      $('#tilt').setAttribute('aria-pressed', 'true');
+    };
+    const D = window.DeviceOrientationEvent;
+    if (D && typeof D.requestPermission === 'function') D.requestPermission().then(r => { if (r === 'granted') start(); }).catch(() => {});
+    else start();
+  }
+
+  /* ------------------------------------------------------------------ tidy */
+  // Lining everything up: each thing slides from where it landed to its place in the rows.
+  function tidyLayout() {
+    const groups = [['work', 'Work', '#work'], ['writing', 'Writing', '#clippings'], ['drawings', 'Drawings', '#drawings'], ['playlists', 'Playlists', '#playlists']];
+    tidyView.innerHTML = `<div class="t-name">${S.name.split(' ').map((_, wi) => `<span class="t-word" data-w="${wi}"></span>`).join('')}</div>
+      <p class="t-role">${esc(S.role)} · ${esc(S.city)}</p>
+      <div class="t-row t-me" data-g="me"></div>
+      ${groups.map(([g, l, href]) => `<section class="t-group"><a class="t-head" href="${href}">${l} →</a><div class="t-row" data-g="${g}"></div></section>`).join('')}`;
+  }
+  function setTidy(on) {
+    if (on === tidy) return;
+    const first = new Map(items.map(it => [it, it.el.getBoundingClientRect()]));
+    if (on) {
+      tidy = true; running = false;
+      tidyLayout();
+      tidyView.hidden = false;
+      document.body.classList.add('is-tidy');
+      items.forEach(it => {
+        it.el.hidden = false;
+        const box = it.t.type === 'letter' ? $(`.t-word[data-w="${it.t.word}"]`, tidyView) : $(`.t-row[data-g="${it.t.group}"]`, tidyView);
+        box.appendChild(it.el);
+        it.el.style.transform = '';
+      });
+      flip(first, it => it.body ? it.body.angle : 0);
+    } else {
+      // Back to the pile: everything drops from where it sits now.
+      window.scrollTo(0, 0);
+      const now = new Map(items.map(it => [it, it.el.getBoundingClientRect()]));
+      items.forEach(it => { pile.appendChild(it.el); it.el.style.transition = 'none'; });
+      tidyView.hidden = true;
+      document.body.classList.remove('is-tidy');
+      tidy = false;
+      items.forEach(it => {
+        const r = now.get(it);
+        const below = r.top > innerHeight;
+        const x = Math.min(innerWidth - it.w / 2, Math.max(it.w / 2, r.left + r.width / 2));
+        const y = below ? -it.h - rand(0, 500) : r.top + r.height / 2;
+        if (!it.body) { it.body = bodyFor(it, x, y, 0); M.Composite.add(engine.world, it.body); }
+        unpin(it);
+        M.Body.setPosition(it.body, { x, y });
+        M.Body.setAngle(it.body, 0);
+        M.Body.setVelocity(it.body, { x: 0, y: 0 });
+        M.Body.setAngularVelocity(it.body, rand(-.05, .05));
+        M.Sleeping.set(it.body, false);
+        place(it);
+      });
+      run();
+    }
+    $('#tidy').setAttribute('aria-pressed', String(tidy));
+    $('#tidy').textContent = tidy ? 'Mess' : 'Tidy';
+  }
+  function flip(first, angleOf) {
+    items.forEach(it => {
+      const a = first.get(it), b = it.el.getBoundingClientRect();
+      if (!a || !a.width) return;
+      it.el.style.transition = 'none';
+      it.el.style.transform = `translate(${a.left + a.width / 2 - (b.left + b.width / 2)}px, ${a.top + a.height / 2 - (b.top + b.height / 2)}px) rotate(${angleOf(it)}rad)`;
+    });
+    void document.body.offsetWidth;
+    items.forEach((it, n) => {
+      it.el.style.transition = reduced ? 'none' : `transform .8s cubic-bezier(.2, .9, .25, 1) ${Math.min(n, 40) * 12}ms`;
+      it.el.style.transform = '';
+    });
+  }
+
+  /* ------------------------------------------------------------------ start */
+  function start() {
+    build();
+    engine = M.Engine.create({ enableSleeping: true, positionIterations: 12, velocityIterations: 8 });
+    engine.gravity.y = 1.1;
+    makeWalls();
+    $('#tidy').addEventListener('click', () => setTidy(!tidy));
+    $('#shake').addEventListener('click', shake);
+    if (matchMedia('(pointer: coarse)').matches && window.DeviceOrientationEvent) { $('#tilt').hidden = false; $('#tilt').addEventListener('click', tilt); }
+    let resizeT;
+    addEventListener('resize', () => {
+      clearTimeout(resizeT);
+      resizeT = setTimeout(() => {
+        makeWalls();
+        items.forEach(it => {
+          if (!it.body) return;
+          const p = it.body.position;
+          M.Body.setPosition(it.body, { x: Math.min(innerWidth - it.w / 2, Math.max(it.w / 2, p.x)), y: Math.min(innerHeight - it.h / 2, p.y) });
+          M.Sleeping.set(it.body, false);
+        });
+      }, 150);
+    });
+    if (reduced) { setTidy(true); return; }
+    drop();
+    run();
+  }
+
+  /* ------------------------------------------------------------------ the rooms behind it */
   const rooms = $$('.room');
   const bar = document.createElement('header');
   bar.className = 'bar';
-  bar.innerHTML = `<a class="bar-home" href="#">${esc(S.name)}</a><nav>${REELS.map(r => `<a href="#${r.id}" data-r="${r.id}">${esc(r.label)}</a>`).join('')}<a href="#cv" data-r="cv">CV</a></nav><a class="bar-mail" href="mailto:${esc(S.email)}">Email</a>`;
+  bar.innerHTML = `<a class="bar-home" href="#">${esc(S.name)}</a><nav><a href="#work" data-r="work">Work</a><a href="#drawings" data-r="drawings">Drawings</a><a href="#clippings" data-r="clippings">Writing</a><a href="#playlists" data-r="playlists">Playlists</a><a href="#cv" data-r="cv">CV</a></nav><a class="bar-mail" href="mailto:${esc(S.email)}">Email</a>`;
   $('#rooms').before(bar);
   rooms.forEach(r => { r.hidden = true; });
 
@@ -152,42 +405,40 @@
   function route() {
     const h = decodeURIComponent(location.hash.slice(1));
     if (h.startsWith('w/')) {
-      sheetReturn = document.body.classList.contains('in-room') ? '#' + rooms.find(r => !r.hidden).id : '#work';
-      if (!document.body.classList.contains('in-room')) enter('work');
+      const inRoom = document.body.classList.contains('in-room');
+      sheetReturn = inRoom ? '#' + rooms.find(r => !r.hidden).id : '';
       openWork(h.slice(2));
       return;
     }
     if ($('#sheet').open) $('#sheet').close();
     const room = rooms.find(r => r.id === h);
-    if (room) enter(room.id);
-    else {
+    if (room) {
+      running = false;
+      document.body.classList.add('in-room');
+      rooms.forEach(r => { r.hidden = r.id !== room.id; });
+      $$('.bar nav a').forEach(a => a.classList.toggle('on', a.dataset.r === room.id));
+      document.title = `${room.dataset.name} · ${S.name}`;
+      window.scrollTo(0, 0);
+      room.classList.remove('arrive'); void room.offsetWidth; room.classList.add('arrive');
+    } else {
       document.body.classList.remove('in-room');
       rooms.forEach(r => { r.hidden = true; });
       document.title = S.name;
-      reel = faceReel; show(at);
+      run();
     }
   }
-  function enter(id) {
-    document.body.classList.add('in-room');
-    rooms.forEach(r => { r.hidden = r.id !== id; });
-    $$('.bar nav a').forEach(a => a.classList.toggle('on', a.dataset.r === id));
-    const r = document.getElementById(id);
-    document.title = `${r.dataset.name} · ${S.name}`;
-    window.scrollTo(0, 0);
-    r.classList.remove('arrive'); void r.offsetWidth; r.classList.add('arrive');
-  }
-  window.addEventListener('hashchange', route);
+  addEventListener('hashchange', route);
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && document.body.classList.contains('in-room') && !$('dialog[open]')) location.hash = ''; });
 
-  /* ------------------------------------------------------------------ work */
-  function work() {
+  /* work */
+  function workRoom() {
     const card = w => {
       const img = (w.images || [])[0];
       return `<a class="wcard" href="#w/${esc(w.id)}">${img ? `<span class="wpic"><img src="${esc(img.src)}" alt="" loading="lazy"></span>` : `<span class="wpic type"><span>${esc(w.title)}</span></span>`}
         <span class="wtitle">${esc(w.title)}</span><span class="wmeta">${esc(w.client)} · ${esc(w.year)}</span></a>`;
     };
-    $('#work-box').innerHTML = [['lately', 'Lately'], ['before', 'Before']].map(([era, label]) =>
-      `<h2 class="era">${label}</h2><div class="wgrid">${S.work.filter(w => w.era === era).map(card).join('')}</div>`).join('') +
+    $('#work-box').innerHTML = [['lately', 'Lately'], ['before', 'Before']].map(([era, l]) =>
+      `<h2 class="era">${l}</h2><div class="wgrid">${S.work.filter(w => w.era === era).map(card).join('')}</div>`).join('') +
       `<p class="clients"><b>Clients</b> ${S.clients.map(esc).join(' · ')}</p>`;
   }
   function openWork(id) {
@@ -201,7 +452,7 @@
         <div class="sheet-text">
           <p class="sheet-meta">${esc(t.client)} · ${esc(t.year)}</p>
           <h2>${esc(t.title)}</h2>
-          ${(t.words || []).map(p => `<p class="words">${esc(p)}</p>`).join('')}${t.wordsFrom ? `<p class="from">${esc(t.wordsFrom)}</p>` : ''}
+          ${(t.words || []).map(p => `<p class="words">${esc(p)}</p>`).join('')}
           ${(t.quotes || []).map(q => `<blockquote><p>“${esc(q.text)}”</p><cite>${esc(q.who)}</cite></blockquote>`).join('')}
           ${(t.links || []).length ? `<p class="sheet-links">${t.links.map(l => `<a href="${esc(l.url)}"${/^https?:/.test(l.url) ? ' target="_blank" rel="noopener"' : ''}>${esc(l.label)}</a>`).join('')}</p>` : ''}
         </div>
@@ -214,16 +465,31 @@
     $('.sheet', dlg).scrollTop = 0;
   }
   $$('dialog').forEach(d => d.addEventListener('click', e => { if (e.target === d) d.close(); }));
-  $('#sheet').addEventListener('close', () => { if (location.hash.startsWith('#w/')) history.replaceState(null, '', sheetReturn); });
+  $('#sheet').addEventListener('close', () => { if (location.hash.startsWith('#w/') || location.hash.startsWith('#p/')) history.replaceState(null, '', sheetReturn || location.pathname + location.search); });
 
-  /* ------------------------------------------------------------------ drawings */
+  /* a playlist, from the pile */
+  function playlist(i) {
+    const p = PLAYLISTS[i], dlg = $('#sheet');
+    if (!p) return;
+    sheetReturn = '';
+    dlg.innerHTML = `<div class="sheet"><button class="close" aria-label="Close">×</button>
+      <div class="sheet-in"><div class="sheet-pics"><img src="${esc(p.cover)}" alt="Cover of ${esc(p.title)}"></div>
+      <div class="sheet-text"><p class="sheet-meta">Playlist</p><h2>${esc(p.title)}</h2>
+      <iframe class="spotify" title="${esc(p.title)} on Spotify" src="https://open.spotify.com/embed/playlist/${esc(p.id)}?utm_source=generator" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
+      <p class="sheet-links"><a href="#playlists">All the playlists</a></p></div></div></div>`;
+    $('.close', dlg).addEventListener('click', () => dlg.close());
+    $('.sheet-links a', dlg).addEventListener('click', () => dlg.close());
+    if (!dlg.open) dlg.showModal();
+  }
+
+  /* drawings */
   function lightbox(src, caption, alt) {
     const d = $('#lightbox');
     d.innerHTML = `<div class="lb"><button class="close" aria-label="Close">×</button><img src="${esc(src)}" alt="${esc(alt || caption)}"><p>${esc(caption)}</p></div>`;
     $('.close', d).addEventListener('click', () => d.close());
     d.showModal();
   }
-  function drawings() {
+  function drawingsRoom() {
     const H = S.hof;
     $('#hof-intro').innerHTML = `${esc(H.intro)} <a href="${esc(H.url)}" target="_blank" rel="noopener">everyhalloffamer.com</a>`;
     const tile = (src, cap, alt) => `<figure class="tile"><button aria-label="${esc(cap)}"><img src="${esc(src)}" alt="${esc(alt)}" loading="lazy"></button><figcaption>${esc(cap)}</figcaption></figure>`;
@@ -232,8 +498,8 @@
     $$('.wall .tile button').forEach(b => b.addEventListener('click', () => { const img = $('img', b); lightbox(img.src, b.getAttribute('aria-label'), img.alt); }));
   }
 
-  /* ------------------------------------------------------------------ writing */
-  function clippings() {
+  /* writing */
+  function clippingsRoom() {
     const outlets = ['All', ...new Set(S.clippings.map(c => c.outlet))];
     const kinds = { Essay: 'var(--pink)', Opinion: 'var(--orange)', List: 'var(--blue)', Animals: 'var(--pink)', Baseball: 'var(--blue)', Music: 'var(--orange)', AI: 'var(--blue)' };
     let filter = 'All';
@@ -253,8 +519,8 @@
     $('#press').innerHTML = S.press.map(p => `<li><a href="${esc(p.url)}" target="_blank" rel="noopener"><b>${esc(p.outlet)}, ${esc(p.year)}</b><span>${esc(p.title)}</span></a></li>`).join('');
   }
 
-  /* ------------------------------------------------------------------ playlists */
-  function playlists() {
+  /* playlists */
+  function playlistsRoom() {
     if (!PLAYLISTS.length) return;
     $('#covers').innerHTML = `<div class="now" id="now"></div><div class="cover-grid">${PLAYLISTS.map((p, i) =>
       `<button class="cover" data-i="${i}"><img src="${esc(p.cover)}" alt="" loading="lazy"><span>${esc(p.title)}</span></button>`).join('')}</div>`;
@@ -268,21 +534,23 @@
     play(0);
   }
 
-  /* ------------------------------------------------------------------ CV */
-  function cv() {
+  /* CV */
+  function cvRoom() {
     const C = S.card;
     $('#bbcard').innerHTML = `<div class="bb-back">
-      <div class="bb-head"><div><h2>${esc(S.name)}</h2><span class="bb-pos">${esc(C.position)}</span></div></div>
+      <div class="bb-head"><h2>${esc(S.name)}</h2><span class="bb-pos">${esc(C.position)}</span></div>
       <div class="bb-vitals">${C.vitals.map(([k, v]) => `<span><b>${esc(k)}:</b> ${esc(v)}</span>`).join('')}</div>
       <table class="bb-table"><thead><tr><th>Year</th><th>Club</th><th>Position</th></tr></thead>
         <tbody>${C.rows.map(r => `<tr>${r.map(c => `<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table>
       <div class="bb-totals">${C.totals.map(([k, v]) => `<div><small>${esc(k)}</small><b>${esc(v)}</b></div>`).join('')}</div>
-      <p class="bb-fact">${esc(C.fact)}<span>${esc(C.factFrom)}</span></p>
+      ${C.fact ? `<p class="bb-fact">${esc(C.fact)}</p>` : ''}
     </div>
     <p class="card-foot">${S.resume ? `<a href="${esc(S.resume)}">Résumé (PDF)</a>` : ''}<a href="https://www.linkedin.com/in/summeranne" target="_blank" rel="noopener">LinkedIn</a></p>`;
   }
 
   /* ------------------------------------------------------------------ go */
-  side(); dots(); show(at); work(); drawings(); clippings(); playlists(); cv();
+  workRoom(); drawingsRoom(); clippingsRoom(); playlistsRoom(); cvRoom();
   route();
+  // The letters are measured in the real font, so wait for it before anything falls.
+  (document.fonts ? document.fonts.load('900 100px "Big Shoulders Display"').then(() => document.fonts.ready) : Promise.resolve()).then(start, start);
 })();
