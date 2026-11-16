@@ -73,14 +73,6 @@ window.SAB_WRITING = [
     "here": true
   },
   {
-    "slug": "summeranne",
-    "url": "https://medium.com/tenderlymag/@summeranne",
-    "title": "Go Outside, Spring Is for Feeling Alive",
-    "outlet": "Tenderly",
-    "date": "2021",
-    "here": true
-  },
-  {
     "slug": "laura-mary-and-me-3b4b26739092",
     "url": "https://medium.com/@summeranne/laura-mary-and-me-3b4b26739092",
     "title": "Laura, Mary, And Me",

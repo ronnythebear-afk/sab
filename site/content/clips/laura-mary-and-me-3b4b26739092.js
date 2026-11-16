@@ -10,11 +10,6 @@ window.CLIP = {
  "date": "2017",
  "blocks": [
   {
-   "t": "img",
-   "src": "media/clips/laura-mary-and-me-3b4b26739092/01.jpg",
-   "alt": "Summer Anne Burton"
-  },
-  {
    "t": "p",
    "html": "--"
   },

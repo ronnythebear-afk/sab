@@ -168,7 +168,7 @@ async function saveImages(slug, blocks, snapshot) {
     for (const src of tries) {
       try {
         const img = await get(src, true);
-        if (!/^image\//.test(img.type) || img.body.length < 600) continue;
+        if (!/^image\//.test(img.type) || img.body.length < 3000) continue; // blurry placeholders and icons
         const ext = img.type.includes('png') ? 'png' : img.type.includes('gif') ? 'gif' : img.type.includes('webp') ? 'webp' : 'jpg';
         const name = String(++n).padStart(2, '0') + '.' + ext;
         fs.writeFileSync(path.join(dir, name), img.body);
