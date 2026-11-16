@@ -1,4 +1,4 @@
-// Fills the record crate.
+// The playlists.
 //
 //   node tools/playlists.mjs
 //     Reads playlists.txt, asks Spotify for each playlist's title and cover (no key needed),
@@ -40,7 +40,7 @@ async function listAccount(user) {
   const have = new Set(fs.readFileSync(listFile, 'utf8').split('\n').map(idOf).filter(Boolean));
   const fresh = found.filter(p => !have.has(p.id));
   if (fresh.length) {
-    fs.appendFileSync(listFile, `\n# Found on Spotify ${new Date().toISOString().slice(0, 10)}. Take the # off any you want in the crate.\n` +
+    fs.appendFileSync(listFile, `\n# Found on Spotify ${new Date().toISOString().slice(0, 10)}. Take the # off any you want on the site.\n` +
       fresh.map(p => `# https://open.spotify.com/playlist/${p.id} |  | ${p.name.replace(/\|/g, '/')}`).join('\n') + '\n');
   }
   console.log(`${found.length} public playlists on ${user}, ${fresh.length} new ones added to playlists.txt (commented out).`);
@@ -52,14 +52,24 @@ async function main() {
 
   const lines = fs.readFileSync(listFile, 'utf8').split('\n').map(l => l.trim()).filter(l => l && !l.startsWith('#'));
   fs.mkdirSync(coverDir, { recursive: true });
+  // What's there now, so a playlist Spotify doesn't answer for this time stays on the site.
+  const before = new Map();
+  if (fs.existsSync(outFile)) {
+    const t = fs.readFileSync(outFile, 'utf8');
+    try { JSON.parse(t.slice(t.indexOf('['), t.lastIndexOf(']') + 1)).forEach(p => before.set(p.id, p)); } catch (e) { /* start fresh */ }
+  }
   const out = [];
   for (const line of lines) {
     const [link, year = '', ...rest] = line.split('|').map(s => s.trim());
     const id = idOf(link);
     if (!id) { console.warn('Skipping, no playlist id in:', line); continue; }
     const url = `https://open.spotify.com/playlist/${id}`;
-    const res = await fetch('https://open.spotify.com/oembed?url=' + encodeURIComponent(url));
-    if (!res.ok) { console.warn(`Skipping ${id}: Spotify answered ${res.status}. Is it public?`); continue; }
+    const res = await fetch('https://open.spotify.com/oembed?url=' + encodeURIComponent(url)).catch(() => ({ ok: false, status: 'nothing' }));
+    if (!res.ok) {
+      if (before.has(id)) { out.push({ ...before.get(id), year, note: rest.join('|').trim() }); console.warn(`Kept ${id} as it was: Spotify answered ${res.status} this time.`); }
+      else console.warn(`Skipping ${id}: Spotify answered ${res.status}. Is it public?`);
+      continue;
+    }
     const meta = await res.json();
     let cover = '';
     if (meta.thumbnail_url) {

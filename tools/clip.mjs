@@ -1,12 +1,12 @@
-// Makes a clean copy of an old article for the reading room: just the words and the pictures,
-// no ads, with every image saved here so it can't break later.
+// Makes a clean copy of an article for the reader: just the words and the pictures, no ads,
+// with every image saved here so it can't break later.
 //
 //   node tools/clip.mjs --all
-//     Clips every entry in site/content/content.js (under clippings) that has a slug and no
-//     clean copy yet. Add the article there first, then run this.
+//     Reads articles.txt, copies every article that doesn't have a copy yet, and writes
+//     site/content/writing.js, the list the site shows, in the order of articles.txt.
 //
 //   node tools/clip.mjs <url> --slug some-name [--force]
-//     Clips one article. --force makes a new copy even if there is one already.
+//     Copies one article. --force makes a new copy even if there is one already.
 //
 // It tries the article's own page first. If that's gone or blocked, it asks the Internet
 // Archive for its saved copy. Pictures that won't load from either place are left out.
@@ -187,20 +187,53 @@ async function saveImages(slug, blocks, snapshot) {
   return out;
 }
 
-function writeIndex() {
-  const files = fs.readdirSync(clipDir).filter(f => f.endsWith('.js') && f !== 'index.js');
-  const index = {};
-  for (const f of files) {
+// articles.txt: one link per line, optionally followed by | title | outlet | year.
+const listFile = path.join(root, 'articles.txt');
+function readList() {
+  if (!fs.existsSync(listFile)) return [];
+  return fs.readFileSync(listFile, 'utf8').split('\n').map(l => l.trim()).filter(l => l && !l.startsWith('#')).map(l => {
+    const [url, title = '', outlet = '', year = ''] = l.split('|').map(x => x.trim());
+    return { url, title, outlet, year };
+  }).filter(a => /^https?:\/\//.test(a.url));
+}
+const OUTLETS = { 'buzzfeed.com': 'BuzzFeed', 'buzzfeednews.com': 'BuzzFeed News', 'not.fangraphs.com': 'NotGraphs', 'fangraphs.com': 'FanGraphs', 'medium.com': 'Medium', 'thehairpin.com': 'The Hairpin', 'praytellagency.com': 'Praytell' };
+function outletOf(url) {
+  let host = '';
+  try { host = new URL(url.replace(/^https?:\/\/web\.archive\.org\/web\/[^/]+\//, '')).hostname.replace(/^www\./, ''); } catch (e) { return ''; }
+  return OUTLETS[host] || host;
+}
+function slugOf(url) {
+  const tail = new URL(url).pathname.split('/').filter(Boolean).pop() || new URL(url).hostname;
+  return tail.replace(/\.[a-z]+$/i, '').replace(/[^a-z0-9-]+/gi, '-').replace(/^-+|-+$/g, '').toLowerCase().slice(0, 80);
+}
+function savedCopies() {
+  const byUrl = new Map();
+  for (const f of fs.readdirSync(clipDir).filter(f => f.endsWith('.js'))) {
     const ctx = { window: {} };
-    vm.runInNewContext(fs.readFileSync(path.join(clipDir, f), 'utf8'), ctx);
-    const c = ctx.window.CLIP;
-    if (!c) continue;
-    const words = c.blocks.map(b => [b.html ? text(b.html) : '', b.caption || '', (b.items || []).map(text).join(' ')].join(' ')).join(' ').split(/\s+/).filter(Boolean).length;
-    const pics = c.blocks.filter(b => b.t === 'img');
-    // The first picture shows up when someone points at this clipping on the front page.
-    index[c.slug] = { title: c.title, words, pics: pics.length, pic: pics.length ? pics[0].src : '' };
+    try { vm.runInNewContext(fs.readFileSync(path.join(clipDir, f), 'utf8'), ctx); } catch (e) { continue; }
+    if (ctx.window.CLIP && ctx.window.CLIP.url) byUrl.set(ctx.window.CLIP.url, ctx.window.CLIP);
   }
-  fs.writeFileSync(path.join(clipDir, 'index.js'), '// Made by tools/clip.mjs. Which clippings have a clean copy here.\nwindow.SAB_CLIPS = ' + JSON.stringify(index, null, 2) + ';\n');
+  return byUrl;
+}
+const titleFromSlug = s => s.replace(/-[0-9a-f]{8,}$/, '').split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+
+// The list the site shows: everything in articles.txt, in that order. Articles with a copy
+// open in the reader; the rest open the original.
+function writeWriting() {
+  const copies = savedCopies();
+  const list = readList().map(a => {
+    const c = copies.get(a.url);
+    return {
+      slug: c ? c.slug : slugOf(a.url),
+      url: a.url,
+      title: a.title || (c && c.title) || titleFromSlug(slugOf(a.url)),
+      outlet: a.outlet || (c && c.outlet) || outletOf(a.url),
+      date: a.year || (c && c.date) || '',
+      here: !!c
+    };
+  });
+  fs.writeFileSync(path.join(site, 'content', 'writing.js'), '// Made by tools/clip.mjs from articles.txt. Edit that file, not this one.\nwindow.SAB_WRITING = ' + JSON.stringify(list, null, 2) + ';\n');
+  return list;
 }
 
 async function clipOne(url, slug, extra = {}) {
@@ -223,7 +256,7 @@ async function clipOne(url, slug, extra = {}) {
   const blocks = await saveImages(slug, parsed.blocks, page.snapshot);
   const clip = {
     slug, url, source, saved: new Date().toISOString().slice(0, 10),
-    title: extra.title || parsed.title, dek: extra.dek || parsed.dek, outlet: extra.outlet || '', date: extra.date || parsed.date,
+    title: extra.title || parsed.title, dek: extra.dek || parsed.dek, outlet: extra.outlet || outletOf(url), date: extra.date || parsed.date,
     blocks
   };
   fs.mkdirSync(clipDir, { recursive: true });
@@ -236,14 +269,13 @@ async function main() {
   const flag = k => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : ''; };
   const force = args.includes('--force');
   const jobs = [];
-  if (args.includes('--index')) { writeIndex(); console.log('Rebuilt the index.'); return; }
+  if (args.includes('--index')) { writeWriting(); console.log('Rebuilt writing.js.'); return; }
   if (args.includes('--all')) {
-    const ctx = { window: {} };
-    vm.runInNewContext(fs.readFileSync(path.join(site, 'content', 'content.js'), 'utf8'), ctx);
-    for (const c of ctx.window.SAB.clippings) {
-      if (!c.slug || !c.url) continue;
-      if (!force && fs.existsSync(path.join(clipDir, c.slug + '.js'))) continue;
-      jobs.push([c.url, c.slug, c]);
+    const copies = savedCopies();
+    for (const a of readList()) {
+      if (!force && copies.has(a.url)) continue;
+      const slug = copies.has(a.url) ? copies.get(a.url).slug : slugOf(a.url);
+      jobs.push([a.url, slug, { title: a.title, outlet: a.outlet, date: a.year }]);
     }
   } else if (args[0] && /^https?:/.test(args[0])) {
     const slug = flag('--slug') || new URL(args[0]).pathname.split('/').filter(Boolean).pop().replace(/[^a-z0-9-]/gi, '-').toLowerCase();
@@ -257,8 +289,8 @@ async function main() {
     console.log(`${slug}:`);
     try { await clipOne(url, slug, extra); ok++; } catch (e) { console.log(`  couldn't make a copy: ${e.message}`); }
   }
-  writeIndex();
-  console.log(`Done. ${ok} of ${jobs.length} clipped.`);
+  writeWriting();
+  console.log(`Done. ${ok} of ${jobs.length} copied.`);
 }
 
 main().catch(e => { console.error(e); process.exit(1); });

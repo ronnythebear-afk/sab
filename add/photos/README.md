@@ -1,0 +1,1 @@
+Drop old photos here.

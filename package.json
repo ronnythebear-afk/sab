@@ -5,8 +5,6 @@
   "description": "Summer Anne Burton's website.",
   "scripts": {
     "preview": "npx --yes serve site",
-    "clip": "node tools/clip.mjs --all",
-    "playlists": "node tools/playlists.mjs",
-    "shoebox": "node tools/shoebox.mjs"
+    "add": "sh tools/add.sh"
   }
 }

@@ -1,0 +1,37 @@
+# When articles.txt, playlists.txt or anything in add/ changes, this copies the new articles,
+# fetches the new playlists, puts the new photos in, and saves the result back here.
+name: Add new things
+on:
+  push:
+    branches: [main]
+    paths: ['articles.txt', 'playlists.txt', 'add/**']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: add
+  cancel-in-progress: false
+jobs:
+  add:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install pillow pillow-heif "opencv-python-headless<5"
+      - run: sh tools/add.sh
+      - name: Save what changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Nothing new."
+          else
+            git commit -m "Add new things"
+            git push
+          fi

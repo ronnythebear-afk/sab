@@ -20,53 +20,35 @@
 <link rel="stylesheet" href="assets/site.css">
 </head>
 <body>
-<header class="top" id="top">
-  <nav class="top-nav" aria-label="Sections">
-    <a href="#work">Work</a><a href="#drawings">Drawings</a><a href="#clippings">Writing</a><a href="#playlists">Playlists</a><a href="#cv">CV</a><a id="top-mail">Email</a>
+<!--
+  The whole site is one page. It starts as a pile: the name in cut-out letters, photo booth
+  strips, a photo from the old hard drive, work, writing, drawings, playlists and two index
+  cards. Everything can be picked up, thrown and tapped open. Tidy lines it all up.
+-->
+<header class="top">
+  <nav class="top-nav" aria-label="Jump to">
+    <a href="#work">Work</a><a href="#writing">Writing</a><a href="#drawings">Drawings</a><a href="#playlists">Playlists</a><a href="#cv">CV</a><a id="top-mail">Email</a>
   </nav>
-  <div class="top-tools" id="tools">
+  <div class="top-tools">
     <button class="tool" id="tidy" aria-pressed="false">Tidy</button>
     <button class="tool" id="shake">Shake</button>
-    <button class="tool" id="tilt" hidden>Tilt</button>
   </div>
 </header>
 
-<main>
-  <!--
-    The front page is a pile of real things: the name in cut-out letters, photo booth strips,
-    prints from campaigns, drawings, clippings, records and two index cards. They fall in, they
-    can be picked up and thrown, and Tidy lines them all up.
-  -->
-  <section class="home" id="home" aria-label="Summer Anne Burton">
-    <div class="pile" id="pile"></div>
-    <div class="tidy" id="tidy-view" hidden></div>
-  </section>
-
-  <div class="rooms" id="rooms">
-    <section class="room" id="work" data-name="Work"><div id="work-box"></div></section>
-    <section class="room" id="drawings" data-name="Drawings">
-      <p class="room-words" id="hof-intro"></p>
-      <div class="wall" id="hof"></div>
-      <div class="wall small" id="sketchbook"></div>
-    </section>
-    <section class="room" id="clippings" data-name="Writing">
-      <div class="clip-filters" id="clip-filters" role="toolbar" aria-label="Show writing from"></div>
-      <div class="clips" id="clips"></div>
-      <div class="press"><h2 class="sub-h">Press</h2><ul id="press"></ul></div>
-    </section>
-    <section class="room" id="playlists" data-name="Playlists"><div id="covers"></div></section>
-    <section class="room" id="cv" data-name="CV"><div class="card-wrap" id="bbcard"></div></section>
-  </div>
+<main class="home" aria-label="Summer Anne Burton">
+  <div class="pile" id="pile"></div>
+  <div class="tidy" id="tidy-view" hidden></div>
 </main>
 
-<dialog class="sheet-d" id="sheet" aria-label="A piece of work"></dialog>
-<dialog class="lightbox" id="lightbox" aria-label="A closer look"></dialog>
+<dialog class="sheet-d" id="sheet" aria-label="A closer look"></dialog>
+<dialog class="lightbox" id="lightbox" aria-label="A drawing"></dialog>
 <div class="flash" id="flash" aria-hidden="true"></div>
 
 <script src="content/content.js"></script>
-<script src="content/faces.js"></script>
+<script src="content/writing.js"></script>
 <script src="content/playlists.js"></script>
-<script src="content/clips/index.js"></script>
+<script src="content/faces.js"></script>
+<script src="content/drive.js"></script>
 <script src="assets/vendor/matter.min.js"></script>
 <script src="assets/site.js"></script>
 </body>

@@ -24,6 +24,17 @@
 .r-links { display: flex; gap: 22px; font: 700 13px/1.4 var(--f-mono); text-transform: uppercase; letter-spacing: .1em; }
 .r-more { margin-top: 70px; }
 .r-more-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
-.r-more .clip { transform: none; margin: 0; }
+
 .r-missing { text-align: center; padding: 40px 0; }
 .r-missing p { font-size: 20px; }
+.bar { position: sticky; top: 0; z-index: 30; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px var(--gutter); background: var(--bg); color: var(--fg); }
+.bar a { text-decoration: none; }
+.bar-home { font: 900 clamp(24px, 2.6vw, 34px)/1 var(--f-big); text-transform: uppercase; white-space: nowrap; }
+.bar-back { font: 700 13px/1 var(--f-mono); text-transform: uppercase; letter-spacing: .12em; }
+.bar-back::before { content: '← '; }
+.bar a:hover { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 5px; }
+.r-more-h { margin: 0 0 18px; font: 900 clamp(34px, 4vw, 56px)/.9 var(--f-big); text-transform: uppercase; }
+.clip { --z: 9px; display: block; padding: 18px 18px 24px; background: var(--paper-3); color: var(--ink); text-decoration: none; -webkit-mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / var(--z) 100%; mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / var(--z) 100%; filter: drop-shadow(0 2px 0 rgba(29, 25, 27, .12)); }
+.clip:hover { transform: translateY(-3px); }
+.clip-mast { display: flex; justify-content: space-between; gap: 8px; padding-bottom: 8px; margin-bottom: 10px; border-bottom: 3px double var(--ink); font: 700 11px/1.2 var(--f-mono); text-transform: uppercase; letter-spacing: .08em; }
+.clip-h { display: block; font: 600 22px/1.12 var(--f-serif); letter-spacing: -.01em; }

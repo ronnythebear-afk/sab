@@ -1,9 +1,10 @@
-# The record crate. One Spotify playlist per line:
-#   link | year | a line about it
-# Then run:  node tools/playlists.mjs
-# It fetches each title and cover from Spotify and writes site/content/playlists.js.
-# Order here is the order in the crate. Lines starting with # are skipped.
-# These came from your old Tumblr posts, and the notes are your own words from then.
+# Your playlists, in the order they show on the site. One Spotify playlist link per line.
+#
+# Paste a link on a new line and save. The site fetches its title and cover. The first five
+# show up in the pile. To add a year and a line about it, put them after the link:
+#   https://open.spotify.com/playlist/... | 2014 | Songs that belong on tapes for cool girls.
+#
+# Lines starting with # are ignored.
 
 https://open.spotify.com/playlist/75BtXdY8McxsGT6Ab7LxNP | 2015 | Songs from Austin (more or less) that sound like Austin to me. I’ve seen most of these artists live, and some of them (Spoon, Okkervil River, Kelly Willis) at least 20 times.
 https://open.spotify.com/playlist/0CACen0O1EEG8PixwuJ7V8 | 2014 | My favorite songs EVER.
