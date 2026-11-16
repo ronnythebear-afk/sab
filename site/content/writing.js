@@ -78,7 +78,7 @@ window.SAB_WRITING = [
     "title": "Go Outside, Spring Is for Feeling Alive",
     "outlet": "Tenderly",
     "date": "2021",
-    "here": false
+    "here": true
   },
   {
     "slug": "laura-mary-and-me-3b4b26739092",
@@ -86,7 +86,7 @@ window.SAB_WRITING = [
     "title": "Laura, Mary, And Me",
     "outlet": "Medium",
     "date": "2017",
-    "here": false
+    "here": true
   },
   {
     "slug": "daniel-straily-a-portrait-of-love",
