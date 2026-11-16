@@ -161,66 +161,6 @@ window.CLIP = {
   {
    "t": "p",
    "html": "The power of the latest wave of AI tech is in the way it communicates, and the effectiveness — and future — of AI hinges on the way we communicate back. In order to create a better and more prosperous tomorrow together, we believe in the importance of becoming fluent in AI comms."
-  },
-  {
-   "t": "h",
-   "html": "More articles"
-  },
-  {
-   "t": "img",
-   "src": "media/clips/prompting-creativity/02.jpg",
-   "alt": ""
-  },
-  {
-   "t": "h",
-   "html": "A Week in the Intern Life: Puppies, Beers, and Teamwork"
-  },
-  {
-   "t": "img",
-   "src": "media/clips/prompting-creativity/03.jpg",
-   "alt": ""
-  },
-  {
-   "t": "h",
-   "html": "Breaking through in 2025: New rules for media and influence"
-  },
-  {
-   "t": "img",
-   "src": "media/clips/prompting-creativity/04.jpg",
-   "alt": ""
-  },
-  {
-   "t": "h",
-   "html": "Creative Marketing: 5 Ways to Shake Up Your Brand’s Marketing Approach"
-  },
-  {
-   "t": "h",
-   "html": "Get in touch"
-  },
-  {
-   "t": "p",
-   "html": "Enough about us—we’re curious about you. Tell us what you’re working on, and we’ll take it from there."
-  },
-  {
-   "t": "p",
-   "html": "Smart people, good company, and no BS. We saved you a seat."
-  },
-  {
-   "t": "p",
-   "html": "Talk shop or dive deeper into our work. Our inbox is always open."
-  },
-  {
-   "t": "p",
-   "html": "The US, the UK, Australia, Asia, and wherever you are right now."
-  },
-  {
-   "t": "h",
-   "html": "Thanks for reaching out! We’ll be in touch soon."
-  },
-  {
-   "t": "img",
-   "src": "media/clips/prompting-creativity/05.jpg",
-   "alt": ""
   }
  ]
 };

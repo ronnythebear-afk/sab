@@ -1,4 +1,4 @@
-/* The reading room: shows one clean copy from content/clips/, like a page torn out and kept. */
+/* Shows one saved copy from content/clips/: the words and pictures, without the ads. */
 (function () {
   const S = window.SAB, have = window.SAB_CLIPS || {};
   const main = document.getElementById('reader');
@@ -8,16 +8,14 @@
   const fmt = d => { if (!d) return ''; const [y, m, dd] = d.split('-'); const mo = m ? ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][+m - 1] : ''; return [mo, dd ? +dd + ',' : '', y].filter(Boolean).join(' '); };
 
   if (!/^[a-z0-9-]+$/i.test(slug) || !have[slug]) {
-    main.innerHTML = `<div class="r-missing"><h1 class="riso-h" data-text="Not in the box">Not in the box</h1>
-      <p>There’s no clean copy of that one yet.${entry ? ` You can read it <a href="${esc(entry.url)}">where it was first published</a>.` : ''}</p>
-      <p><a class="btn" href="./#clippings">See all the clippings</a></p></div>`;
+    main.innerHTML = `<div class="r-missing"><p class="r-links">${entry ? `<a href="${esc(entry.url)}">${esc(entry.title)} ↗</a>` : ''}<a href="./#clippings">Writing</a></p></div>`;
     return;
   }
 
   const s = document.createElement('script');
   s.src = `content/clips/${slug}.js`;
   s.onload = () => render(window.CLIP);
-  s.onerror = () => { main.innerHTML = '<p class="loading">That clipping didn’t load. Try again?</p>'; };
+  s.onerror = () => { main.innerHTML = `<p class="r-links"><a href="./#clippings">Writing</a></p>`; };
   document.body.appendChild(s);
 
   function block(b) {
@@ -29,7 +27,7 @@
       const cap = (b.caption ? esc(b.caption) : '') + (b.credit ? ` <span class="credit">${esc(b.credit)}</span>` : '');
       return `<figure><img src="${esc(b.src)}" alt="${esc(b.alt || '')}" loading="lazy"${b.w ? ` width="${b.w}" height="${b.h}"` : ''}>${cap ? `<figcaption>${cap}</figcaption>` : ''}</figure>`;
     }
-    if (b.t === 'link') return `<p class="r-link"><a href="${esc(b.url)}" target="_blank" rel="noopener">${esc(b.label)} was here. See it where it lives ↗</a></p>`;
+    if (b.t === 'link') return `<p class="r-link"><a href="${esc(b.url)}" target="_blank" rel="noopener">${esc(b.label)} ↗</a></p>`;
     return '';
   }
 
@@ -49,11 +47,10 @@
         </header>
         <div class="r-body">${c.blocks.map(block).join('')}</div>
         <footer class="r-note">
-          <p>This is a clean copy of a piece I wrote for ${esc(outlet || 'somewhere else')}${date ? ` in ${esc(date.slice(0, 4))}` : ''}, kept here without the ads, pop-ups and broken pictures.
-          ${c.source === 'Internet Archive' ? 'It came from the Internet Archive’s saved copy.' : ''} <a href="${esc(e.archiveOnly ? 'https://web.archive.org/web/2014/' + c.url : c.url)}" target="_blank" rel="noopener">The original is here ↗</a></p>
+          <p>${esc(outlet)}${date ? `, ${esc(fmt(date))}` : ''}. <a href="${esc(e.archiveOnly ? 'https://web.archive.org/web/2014/' + c.url : c.url)}" target="_blank" rel="noopener">Original ↗</a></p>
         </footer>
       </article>
-      ${others.length ? `<aside class="r-more"><h2 class="sub-h">More clippings</h2><div class="r-more-row">${others.map(o => `<a class="clip" href="read.html?c=${esc(o.slug)}"><span class="clip-mast"><span>${esc(o.outlet)}</span><span>${esc((o.date || '').slice(0, 4))}</span></span><span class="clip-h">${esc(o.title)}</span></a>`).join('')}</div></aside>` : ''}`;
+      ${others.length ? `<aside class="r-more"><h2 class="sub-h">More writing</h2><div class="r-more-row">${others.map(o => `<a class="clip" href="read.html?c=${esc(o.slug)}"><span class="clip-mast"><span>${esc(o.outlet)}</span><span>${esc((o.date || '').slice(0, 4))}</span></span><span class="clip-h">${esc(o.title)}</span></a>`).join('')}</div></aside>` : ''}`;
     window.scrollTo(0, 0);
   }
 })();

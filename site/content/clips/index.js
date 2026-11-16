@@ -44,8 +44,8 @@ window.SAB_CLIPS = {
   },
   "prompting-creativity": {
     "title": "Prompting Creativity: How Praytell Is Collaborating With AI",
-    "words": 1344,
-    "pics": 5,
+    "words": 1244,
+    "pics": 1,
     "pic": "media/clips/prompting-creativity/01.jpg"
   },
   "social-networking-a-love-story": {

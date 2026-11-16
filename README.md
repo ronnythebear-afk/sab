@@ -1,6 +1,8 @@
 # summeranneburton.com
 
-Summer's website. The front page is a list, "Some of the things I've done," and each line opens something real: a campaign, a clipping, a playlist, the Hall of Famer drawings, the back of a baseball card. Everything on it is hers. The photos are her photos and the campaigns' own press photos, the drawings are from Every Hall of Famer, the covers are her Spotify playlists, and the words are hers wherever they could be.
+Summer's website. The front page is a photo booth: moving across the page flips through her selfies in hair-color order, and the page takes on each photo's color. Clicking takes a picture, and four pictures print a strip that can be saved. The four small frames (Work, Drawings, Writing, Playlists) lead to everything else, and pointing at one runs its pictures through the booth.
+
+Nothing on the site is written for her. Text is a plain fact (a name, a client, a year), her own words with where they came from, or a quote from coverage with who said it.
 
 There's no build step. The site is the `site/` folder, as is.
 
@@ -10,33 +12,36 @@ There's no build step. The site is the `site/` folder, as is.
 npx serve site
 ```
 
-Then open the address it prints. (Opening `site/index.html` by double-clicking mostly works too, but a few things, like the clean article copies, want a real address.)
-
 ## Change what it says
 
-- The list is `site/content/list.js`. It's a plain block of text, one line per thing, and the top of the file explains the little marks (`==highlight==`, `~~cross out~~ {handwritten fix}`) and where a line can point. It's a draft written from your own words. Rewrite anything that doesn't sound like you.
-- Everything else is `site/content/content.js`: the line under your name, each campaign's write-up, the career card, the drawings, the clippings, your links. Lines marked `CHECK` are things I found on the web and want you to confirm.
-- Photos go in `site/media/`. A campaign gets a picture by adding it to that campaign's `images` in content.js.
-- `lookingForWork` in content.js is `false`. Set it to `true` when you want the bottom of the page to say you're looking.
+- `site/content/content.js` has the work, the CV, the drawings, the writing and your links. Each piece of work can have `words` (yours, with `wordsFrom`) and `quotes` (other people's, with `who`). Lines marked `CHECK` are things found on the web to confirm.
+- `site/content/faces.js` is the photo booth, made by `tools/faces.py`.
+- `site/content/playlists.js` is the playlists, made by `tools/playlists.mjs` from `playlists.txt`.
+- `lookingForWork` and `lookingLine` in content.js are off and empty. They're for when you want to say you're looking, in your own words.
 
-## The tools
+## Adding photos to the photo booth
+
+Selfies work best when the face is clear and fills a good part of the frame. Put them in a folder and run:
+
+```
+pip install "opencv-python-headless<5" pillow
+python3 tools/faces.py path/to/folder
+```
+
+It finds each face, crops a square so every face lands in about the same spot, and sorts them by hair color. If it gets a face wrong, or picks the wrong color, fix it in a `faces-fix.json` in the same folder (the top of `tools/faces.py` explains, and `tools/faces-fix.example.json` is the file used for the first 18). New photos are added to the ones already in the booth. To take one out, delete its line from faces.js.
+
+## The other tools
 
 They need Node 18 or newer and nothing else.
 
-- `node tools/clip.mjs --all` makes a clean copy of every clipping in content.js that doesn't have one yet: the words and pictures, no ads, every image saved here so it can't break. It tries the original page first and the Internet Archive second. To add an article, put it in the `clippings` list in content.js and run this. Five of them (two NotGraphs posts, The Hairpin, and both Medium pieces) couldn't be reached from where this was built, and should work from your computer.
-- `node tools/playlists.mjs` reads `playlists.txt` and fetches each playlist's title and cover from Spotify. To pull in every public playlist on your account, run it with `--user summeranne` and your Spotify app's keys (`SPOTIFY_CLIENT_ID` and `SPOTIFY_CLIENT_SECRET`). New ones get added to playlists.txt commented out, so you choose.
-- `node tools/shoebox.mjs ~/some-folder` adds photos to the random-photo pile, with the date the camera wrote on them stamped in the corner. On a Mac it also shrinks them and handles HEIC. Captions can go in a `captions.txt` in the same folder.
-
-## Things on the page that aren't written down anywhere
-
-Type `astros`. Type `maude` or `otis`. Try the Konami code. Click the drummer line with the sound on.
+- `node tools/clip.mjs --all` saves a clean copy of every article in content.js that doesn't have one yet: the words and pictures, no ads, every image kept here so it can't break. It tries the original page first and the Internet Archive second. Five (two NotGraphs posts, The Hairpin, both Medium pieces) need running from a computer that can reach the Internet Archive.
+- `node tools/playlists.mjs` reads `playlists.txt` and fetches each playlist's title and cover from Spotify. With `--user summeranne` and a Spotify app's keys (`SPOTIFY_CLIENT_ID`, `SPOTIFY_CLIENT_SECRET`), it also finds every public playlist on the account and adds new ones to playlists.txt, commented out.
 
 ## Where things came from
 
-- Campaign photos for the parchment paper dress, Brynn Whitfield and Paige DeSorbo are from the brands' PR Newswire announcements. Visit Tomorrow and Streak Shop are from the old Squarespace site. Swap in your own shots whenever you have them.
-- The photo booth and shoebox selfies are from "these are my favorite selfies from the last ten years," on Tumblr in 2015. The watermelon is your dad's AP photo, from Tumblr in 2014. Vic Chesnutt is from 2009.
+- The photo booth selfies are from Summer's own Tumblr posts, 2011 to 2015.
+- Campaign photos for the parchment paper dress, Brynn Whitfield and Paige DeSorbo are from the brands' PR Newswire announcements. Visit Tomorrow, Streak Shop and the BuzzFeed photos are from the old Squarespace site.
 - The Hall of Famer drawings and the other artwork are from the old Squarespace site.
-- The list inside the list (the 2014 line) is "Some of the things I did in 2014," from Tumblr.
-- The 22 playlists are the ones you shared on Tumblr between 2011 and 2015, with your notes from then.
+- The playlists are ones shared on Tumblr between 2011 and 2015.
 
 HOSTING.md covers putting it online at summeranneburton.com.
