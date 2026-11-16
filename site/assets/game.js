@@ -1,15 +1,9 @@
 /*
-  A ballpark under the Austin sky. Pitches keep coming. Tap to swing, and the ball goes where
-  you tapped:
-    the billboards on the outfield wall   the work
-    the ticker under the scoreboard       the writing
-    the plaques along the stands          Every Hall of Famer
-    over the wall                         a home run, and a playlist
-    the video board                       the photo booth and the old hard drive
-    the name in lights                    the CV
-  Every hit is a card. The binder (Cards, bottom right) holds them all, so nothing on the site
-  needs a hit to be seen. The sky is Austin's sky right now, the scoreboard has Austin's
-  weather, and when the Astros are playing, their score.
+  A ballpark under the Austin sky. Everything is a sign on the outfield wall: the work, the
+  writing, Every Hall of Famer and the playlists. Tap a sign to open it, or press Swing and
+  the ball hits a sign at random, and that one opens. Sometimes it's a home run, and a home
+  run plays a playlist. The scoreboard has the name, Austin right now, and a screen that
+  runs the selfies and the old hard drive photos.
 */
 (function () {
   const S = window.SAB;
@@ -23,118 +17,82 @@
   const pick = a => a[Math.floor(Math.random() * a.length)];
   const lerp = (a, b, t) => a + (b - a) * t;
   const year = d => (d || '').slice(0, 4);
-  const work = id => S.work.find(w => w.id === id);
+  const wait = ms => new Promise(r => setTimeout(r, ms));
   $('#mail').href = `mailto:${S.email}`;
 
-  /* ------------------------------------------------------------------ the cards */
-  const CARDS = [
-    { id: 'cv', kind: 'cv', tag: 'CV', title: S.name, sub: `${S.role} · ${S.city}`, img: (FACES[0] || {}).src },
-    ...S.work.map(w => ({ id: 'w:' + w.id, kind: 'work', ref: w.id, tag: 'Work', title: w.title, sub: `${w.client} · ${w.year}`, img: ((w.images || [])[0] || {}).src })),
-    ...WRITING.map(a => ({ id: 'a:' + a.slug, kind: 'writing', ref: a, tag: 'Writing', title: a.title, sub: [a.outlet, year(a.date)].filter(Boolean).join(', ') })),
-    ...PLAYLISTS.map((p, i) => ({ id: 'p:' + p.id, kind: 'playlist', ref: i, tag: 'Playlist', title: p.title, sub: p.year, img: p.cover })),
-    ...DRAWINGS.map((d, i) => ({ id: 'd:' + d[0], kind: 'drawing', ref: i, tag: 'Hall of Famer', title: d[1], sub: d[2], img: `media/hof/${d[0]}.jpg` }))
-  ];
-  const card = id => CARDS.find(c => c.id === id);
-  let got = new Set();
-  try { got = new Set(JSON.parse(localStorage.getItem('sab-cards') || '[]')); } catch (e) { /* a fresh binder */ }
-  const save = () => { try { localStorage.setItem('sab-cards', JSON.stringify([...got])); } catch (e) { /* fine */ } };
-  $('#of').textContent = CARDS.length;
-  const count = () => { $('#got').textContent = [...got].filter(card).length; };
-  count();
+  /* ------------------------------------------------------------------ the signs */
+  const firstDrawing = Math.max(0, DRAWINGS.findIndex(d => d[0] === 'nolan-ryan'));
+  const colors = ['#13213f', '#ef6b2b', '#f5efe2'];
+  const SIGNS = [
+    ...S.work.map((w, i) => {
+      const img = (w.images || [])[0];
+      return { kind: 'work', id: w.id, label: w.client, face: img ? `<img src="${esc(img.src)}" alt="" draggable="false">` : `<b>${esc(w.title)}</b>`, type: !img, c: colors[i % 3], name: w.title };
+    }),
+    WRITING.length && { kind: 'writing', label: 'Writing', name: 'Writing', face: `<span class="news"><i>${esc(WRITING[0].outlet)}</i><b>${esc(WRITING[0].title)}</b></span>` },
+    DRAWINGS.length && { kind: 'drawings', label: 'Every Hall of Famer', name: 'Every Hall of Famer', face: `<img class="drawn" src="media/hof/${esc(DRAWINGS[firstDrawing][0])}.jpg" alt="" draggable="false">` },
+    PLAYLISTS.length && { kind: 'playlists', label: 'Playlists', name: 'Playlists', face: `<img src="${esc(PLAYLISTS[0].cover)}" alt="" draggable="false">` }
+  ].filter(Boolean);
 
-  function cardHTML(c, back) {
-    if (back) return `<span class="card back"><span class="back-in"><i></i></span></span>`;
-    const pic = c.kind === 'writing'
-      ? `<span class="pic paper"><span class="mast"><span>${esc(c.ref.outlet)}</span><span>${esc(year(c.ref.date))}</span></span><span class="hl">${esc(c.title)}</span></span>`
-      : c.img ? `<span class="pic"><img src="${esc(c.img)}" alt="" draggable="false"></span>`
-        : `<span class="pic type"><b>${esc(c.title)}</b></span>`;
-    const noimg = c.kind !== "writing" && !c.img ? " noimg" : "";
-    return `<span class="card k-${c.kind}${noimg}">${pic}<span class="tag">${esc(c.tag)}</span><span class="nm">${esc(c.title)}</span><span class="sub">${esc(c.sub || '')}</span></span>`;
-  }
-
-  function openCard(c) {
-    if (c.kind === 'cv') return openCV();
-    if (c.kind === 'work') return openWork(c.ref);
-    if (c.kind === 'writing') { const a = c.ref; if (a.here) location.href = `read.html?c=${encodeURIComponent(a.slug)}`; else window.open(a.url, '_blank', 'noopener'); return; }
-    if (c.kind === 'playlist') return playlist(c.ref);
-    if (c.kind === 'drawing') return drawing(c.ref);
+  function open(s) {
+    if (s.kind === 'work') return openWork(s.id);
+    if (s.kind === 'writing') return openWriting();
+    if (s.kind === 'drawings') return drawing(Math.floor(Math.random() * DRAWINGS.length));
+    if (s.kind === 'playlists') return playlist(Math.floor(Math.random() * PLAYLISTS.length));
   }
 
   /* ------------------------------------------------------------------ the park */
   const park = $('#park');
-  const plaqueSet = ['nolan-ryan', 'willie-mays', 'satchel-paige', 'rollie-fingers', 'ted-williams', 'hilton-smith', 'lou-gehrig', 'jackie-robinson', 'roberto-clemente', 'babe-ruth']
-    .map(id => DRAWINGS.findIndex(d => d[0] === id)).filter(i => i >= 0);
-  while (plaqueSet.length < 10 && plaqueSet.length < DRAWINGS.length) { const i = Math.floor(Math.random() * DRAWINGS.length); if (!plaqueSet.includes(i)) plaqueSet.push(i); }
-  const colors = ['#13213f', '#ef6b2b', '#f5efe2'];
   park.innerHTML = `
     <div class="sky"><i class="stars"></i></div>
-    <div class="tower l"><i></i></div><div class="tower r"><i></i></div>
+    <div class="tower"><i></i></div><div class="tower"><i></i></div>
     <canvas class="crowd" id="crowd" aria-hidden="true"></canvas>
     <svg class="field" id="field" aria-hidden="true"></svg>
     <div class="board" id="board">
       <div class="led">
-        <button class="led-name" data-t="name" type="button" aria-label="${esc(S.name)}, CV">${esc(S.name)}</button>
+        <button class="led-name" type="button" data-cv aria-label="${esc(S.name)}, CV">${esc(S.name)}</button>
         <p class="led-row">${esc(S.role)} · ${esc(S.city)}</p>
         <p class="led-row" id="now"></p>
-        <p class="led-count" aria-hidden="true"><span>S <i id="strikes"></i></span><span>O <i id="outs"></i></span><span>H <b id="hits">0</b></span></p>
       </div>
-      <button class="screen" data-t="screen" type="button" aria-label="The video board"><img id="screen-img" alt="" src=""><span class="cap" id="screen-cap"></span><span class="stamp" id="screen-stamp"></span></button>
-      <button class="ticker" data-t="ticker" type="button" aria-label="Writing"><span class="tk" id="tk"></span></button>
+      <button class="screen" id="screen" type="button" aria-label="Another photo"><img id="screen-img" alt="" src=""><span class="cap" id="screen-cap"></span><span class="stamp" id="screen-stamp"></span></button>
     </div>
-    <div class="honor" id="honor">${plaqueSet.map(i => `<button class="plaque" data-t="plaque" data-i="${i}" type="button" aria-label="Drawing of ${esc(DRAWINGS[i][1])}"><img src="media/hof/${esc(DRAWINGS[i][0])}.jpg" alt="" draggable="false"></button>`).join('')}</div>
-    <div class="wall" id="wall">${S.work.map((w, i) => {
-      const img = (w.images || [])[0];
-      return img ? `<button class="bb" data-t="billboard" data-id="${esc(w.id)}" type="button" aria-label="${esc(w.title)}"><img src="${esc(img.src)}" alt="" draggable="false"><span>${esc(w.client)}</span></button>`
-        : `<button class="bb type${i % 3 === 2 ? ' light' : ''}" data-t="billboard" data-id="${esc(w.id)}" type="button" aria-label="${esc(w.title)}" style="--c:${colors[i % 3]}"><b>${esc(w.title)}</b><span>${esc(w.client)}</span></button>`;
-    }).join('')}</div>
-    <i class="zone" id="zone"></i>
+    <div class="wall" id="wall">${SIGNS.map((s, i) => `<button class="sign k-${s.kind}${s.type ? ' type' : ''}${s.c === colors[2] ? ' light' : ''}" data-i="${i}" type="button" style="${s.c ? `--c:${s.c}` : ''}"><span class="face">${s.face}</span><span class="label">${esc(s.label)}</span></button>`).join('')}</div>
     <i class="shadow" id="shadow"></i>
     <i class="ball" id="ball"></i>
-    <i class="swing" id="swing"></i>
+    <i class="swing-arc" id="arc"></i>
     <i class="rain"></i>
-    <div class="pop" id="pop" hidden></div>`;
+    <button class="swing-btn" id="swing" type="button">Swing</button>`;
 
   // Where everything goes, worked out from the size of the screen.
   let L = {};
   function layout() {
     const W = innerWidth, H = innerHeight, portrait = W / H < .9;
-    const boardW = portrait ? W * .94 : Math.min(720, Math.max(520, W * .46));
-    const boardH = boardW * (portrait ? .5 : .34);
-    const boardTop = portrait ? 54 : Math.max(18, H * .045);
-    const ph = portrait ? 30 : 38;
-    const perRow = portrait ? 4 : S.work.length;
-    const rows = Math.ceil(S.work.length / perRow);
-    const gap = portrait ? 8 : 14;
-    const bw = Math.min(210, (W * .95 - gap * (perRow - 1)) / perRow), bh = bw * .58;
-    const wallTop = boardTop + boardH + ph + (portrait ? 18 : 22);
-    const wallH = rows * bh + (rows + 1) * gap;
-    const wallBottom = wallTop + wallH;
-    const plateY = H - (portrait ? 54 : 46), cx = W / 2;
-    const fieldH = plateY - wallBottom;
-    const moundY = wallBottom + fieldH * .6;
+    const boardW = portrait ? W * .94 : Math.min(660, Math.max(440, W * .42));
+    const boardH = boardW * (portrait ? .42 : .3);
+    const boardTop = portrait ? 54 : Math.max(16, H * .04);
+    const perRow = portrait ? 3 : 5, rows = Math.ceil(SIGNS.length / perRow), gap = portrait ? 8 : 14;
+    const wallTop = boardTop + boardH + (portrait ? 30 : 38);
+    let bw = Math.min(230, (W * (portrait ? .95 : .9) - gap * (perRow - 1)) / perRow), bh = bw * .56;
+    const maxWall = H * (portrait ? .38 : .4);
+    if (rows * bh + (rows + 1) * gap > maxWall) { bh = (maxWall - (rows + 1) * gap) / rows; bw = bh / .56; }
+    const wallH = rows * bh + (rows + 1) * gap, wallBottom = wallTop + wallH;
+    const plateY = H - (portrait ? 64 : 56), cx = W / 2;
+    const moundY = wallBottom + (plateY - wallBottom) * .55;
     const secondY = moundY - (plateY - moundY) * .62;
     const dx = Math.min(W * (portrait ? .4 : .26), (plateY - secondY) * 1.55);
-    L = { W, H, portrait, boardW, boardH, boardTop, ph, perRow, gap, bw, bh, wallTop, wallH, wallBottom, plateY, cx, moundY, secondY, dx, standsTop: boardTop + boardH * .55 };
+    L = { W, H, portrait, boardW, boardH, boardTop, wallTop, wallH, wallBottom, plateY, cx, moundY, secondY, dx, standsTop: boardTop + boardH * .55 };
 
     park.style.setProperty('--horizon', (L.standsTop + boardH * .25) + 'px');
-    const board = $('#board');
-    Object.assign(board.style, { width: boardW + 'px', height: boardH + 'px', left: (cx - boardW / 2) + 'px', top: boardTop + 'px' });
-    const honor = $('#honor');
-    const nPlaques = portrait ? 6 : plaqueSet.length;
-    $$('.plaque', honor).forEach((p, i) => { p.hidden = i >= nPlaques; p.style.width = ph * .8 + 'px'; p.style.height = ph + 'px'; });
-    Object.assign(honor.style, { top: (wallTop - ph - 8) + 'px', height: ph + 'px' });
+    Object.assign($('#board').style, { width: boardW + 'px', height: boardH + 'px', left: (cx - boardW / 2) + 'px', top: boardTop + 'px' });
     const wall = $('#wall');
     Object.assign(wall.style, { top: wallTop + 'px', height: wallH + 'px', gap: gap + 'px', padding: `${gap}px ${(W - (bw * perRow + gap * (perRow - 1))) / 2}px` });
-    $$('.bb', wall).forEach(b => { b.style.width = bw + 'px'; b.style.height = bh + 'px'; });
-    // light towers stand halfway between the scoreboard and the edge, where there's room
+    $$('.sign', wall).forEach(b => { b.style.width = bw + 'px'; b.style.height = bh + 'px'; });
     const side = (W - boardW) / 2;
     $$('.tower').forEach((t, i) => {
       t.hidden = side < 150;
       t.style.height = (L.standsTop + 10) + 'px';
       t.style.left = ((i ? W - side * .42 : side * .42) - 4) + 'px';
     });
-    const z = $('#zone');
-    Object.assign(z.style, { left: (cx - 30) + 'px', top: (plateY - 92) + 'px' });
+    Object.assign($('#swing').style, { left: cx + 'px', top: (plateY - 8) + 'px' });
     drawField();
     drawCrowd();
   }
@@ -147,20 +105,18 @@
     // the mowing: wedges fanning out from home plate to the wall
     const n = 16, far = wallBottom + 10, span = W * 1.6;
     let stripes = '';
-    for (let i = 0; i < n; i++) {
-      if (i % 2) continue;
+    for (let i = 0; i < n; i += 2) {
       const x1 = cx - span / 2 + span * i / n, x2 = cx - span / 2 + span * (i + 1) / n;
       stripes += `<polygon points="${p(home)} ${x1.toFixed(1)},${far} ${x2.toFixed(1)},${far}" />`;
     }
-    // foul lines run from home through first and third to the wall
-    const foul = (b) => { const t = (wallBottom - plateY) / (b[1] - plateY); return [cx + (b[0] - cx) * t, wallBottom]; };
+    const foul = b => { const t = (wallBottom - plateY) / (b[1] - plateY); return [cx + (b[0] - cx) * t, wallBottom]; };
     const lf = foul(third), rf = foul(first);
     const rx = dx * 1.1, ry = (plateY - secondY) * .66;
     $('#field').setAttribute('viewBox', `0 0 ${W} ${H}`);
     $('#field').innerHTML = `
       <rect class="grass" x="0" y="${wallBottom}" width="${W}" height="${H - wallBottom}" />
       <g class="mow">${stripes}</g>
-      <rect class="track" x="0" y="${wallBottom}" width="${W}" height="${Math.max(10, (plateY - wallBottom) * .045)}" />
+      <rect class="track" x="0" y="${wallBottom}" width="${W}" height="${Math.max(8, (plateY - wallBottom) * .045)}" />
       <ellipse class="dirt" cx="${cx}" cy="${midY - ry * .2}" rx="${rx}" ry="${ry}" />
       <polygon class="infield" points="${p([cx, plateY - (plateY - secondY) * .16])} ${p([cx + dx * .8, midY + 2])} ${p([cx, secondY + (plateY - secondY) * .14])} ${p([cx - dx * .8, midY + 2])}" />
       <ellipse class="dirt" cx="${cx}" cy="${moundY}" rx="${dx * .14}" ry="${(plateY - secondY) * .06}" />
@@ -168,10 +124,7 @@
       <line class="chalk" x1="${cx}" y1="${plateY}" x2="${lf[0]}" y2="${lf[1]}" />
       <line class="chalk" x1="${cx}" y1="${plateY}" x2="${rf[0]}" y2="${rf[1]}" />
       <rect class="rubber" x="${cx - 7}" y="${moundY - 2}" width="14" height="4" />
-      ${[first, second, third].map(b => `<rect class="base" x="${b[0] - 6}" y="${b[1] - 6}" width="12" height="12" transform="rotate(45 ${b[0]} ${b[1]}) scale(1 1)" />`).join('')}
-      <polygon class="plate" points="${cx - 13},${plateY - 4} ${cx + 13},${plateY - 4} ${cx + 13},${plateY + 3} ${cx},${plateY + 10} ${cx - 13},${plateY + 3}" />
-      <rect class="box" x="${cx - 58}" y="${plateY - 22}" width="34" height="46" />
-      <rect class="box" x="${cx + 24}" y="${plateY - 22}" width="34" height="46" />`;
+      ${[first, second, third].map(b => `<rect class="base" x="${b[0] - 6}" y="${b[1] - 6}" width="12" height="12" transform="rotate(45 ${b[0]} ${b[1]})" />`).join('')}`;
   }
 
   // The crowd: rows of little people in the stands, in whatever the light is.
@@ -195,7 +148,6 @@
         g.fillRect(x, y + 1, 4, 4);
         g.fillStyle = night ? '#4a3e3a' : pick(['#3b2a20', '#7a5134', '#d9a77c', '#2a2321', '#b98563']);
         g.fillRect(x + 1, y - 1, 2, 2);
-        if (night && Math.random() < .015) { g.fillStyle = '#fff6c8'; g.fillRect(x + 1, y - 3, 2, 2); }
       }
     }
   }
@@ -215,7 +167,8 @@
   const mix = (a, b, t) => '#' + [1, 3, 5].map(i => Math.round(lerp(parseInt(a.slice(i, i + 2), 16), parseInt(b.slice(i, i + 2), 16), t)).toString(16).padStart(2, '0')).join('');
   let wasNight = null;
   function light() {
-    const alt = new URLSearchParams(location.search).has('alt') ? +new URLSearchParams(location.search).get('alt') : sunAlt(Date.now());
+    const q = new URLSearchParams(location.search);
+    const alt = q.has('alt') ? +q.get('alt') : sunAlt(Date.now());
     let i = SKY.findIndex(s => s[0] > alt);
     if (i <= 0) i = i === 0 ? 1 : SKY.length - 1;
     const a = SKY[i - 1], b = SKY[i], t = Math.max(0, Math.min(1, (alt - a[0]) / (b[0] - a[0])));
@@ -235,20 +188,18 @@
   function nowLine() { $('#now').textContent = ['Austin', temp, clock.format(new Date()), game].filter(Boolean).join(' · '); }
   async function weather() {
     try {
-      const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude=30.27&longitude=-97.74&current=temperature_2m,weather_code&temperature_unit=fahrenheit&timezone=America%2FChicago');
-      const j = await r.json();
+      const j = await (await fetch('https://api.open-meteo.com/v1/forecast?latitude=30.27&longitude=-97.74&current=temperature_2m,weather_code&temperature_unit=fahrenheit&timezone=America%2FChicago')).json();
       temp = Math.round(j.current.temperature_2m) + '°';
       document.body.classList.toggle('raining', RAIN.has(j.current.weather_code));
-    } catch (e) { /* no weather, still a ballgame */ }
+    } catch (e) { /* no weather, still a ballpark */ }
     nowLine();
   }
+  // When the Astros are playing today, their game goes on the scoreboard.
   async function astros() {
     try {
-      const r = await fetch(`https://statsapi.mlb.com/api/v1/schedule?sportId=1&teamId=117&date=${today()}&hydrate=linescore,team`);
-      const g = (((await r.json()).dates || [])[0] || {}).games;
-      if (!g || !g.length) { game = ''; return nowLine(); }
-      const x = g[g.length - 1], aw = x.teams.away, hm = x.teams.home;
-      const ab = t => t.team.abbreviation || t.team.teamName || '';
+      const g = ((((await (await fetch(`https://statsapi.mlb.com/api/v1/schedule?sportId=1&teamId=117&date=${today()}&hydrate=linescore,team`)).json()).dates || [])[0] || {}).games) || [];
+      if (!g.length) { game = ''; return nowLine(); }
+      const x = g[g.length - 1], aw = x.teams.away, hm = x.teams.home, ab = t => t.team.abbreviation || t.team.teamName || '';
       const st = x.status.abstractGameState, ls = x.linescore || {};
       if (st === 'Live') game = `${ab(aw)} ${aw.score} ${ab(hm)} ${hm.score} ${ls.inningHalf === 'Top' ? 'T' : 'B'}${ls.currentInning || ''}`;
       else if (st === 'Final') game = `Final ${ab(aw)} ${aw.score} ${ab(hm)} ${hm.score}`;
@@ -257,217 +208,89 @@
     nowLine();
   }
 
-  /* ------------------------------------------------------------------ the scoreboard */
-  // The ticker runs one headline at a time. Whatever's running is what a hit there opens.
-  let tkAt = 0;
-  function ticker() {
-    const tk = $('#tk');
-    if (!WRITING.length) return;
-    const a = WRITING[tkAt % WRITING.length];
-    tk.textContent = '★ ' + a.title;
-    const box = $('.ticker').clientWidth, wTxt = tk.scrollWidth;
-    const dur = Math.max(5000, (box + wTxt) * 16);
-    if (reduced) { tk.style.transform = 'none'; setTimeout(() => { tkAt++; ticker(); }, 6000); return; }
-    tk.animate([{ transform: `translateX(${box}px)` }, { transform: `translateX(${-wTxt}px)` }], { duration: dur, easing: 'linear' }).onfinish = () => { tkAt++; ticker(); };
-  }
-  // The video board: a selfie, then a photo from the old hard drive, and so on.
-  let scAt = 0, scNow = null;
+  // The screen: a selfie, then a photo from the old hard drive, and so on. Tap for another.
+  let scAt = 0, scT = 0;
   const stamp = d => { if (!d) return ''; const [y, m, dd] = d.split('-'); return [`'${y.slice(2)}`, m && +m, dd && +dd].filter(Boolean).join(' '); };
-  function screen(next) {
+  function screen() {
+    clearTimeout(scT);
     const pool = scAt % 2 && DRIVE.length ? DRIVE : FACES.length ? FACES : DRIVE;
     if (!pool.length) return;
-    scNow = pick(pool);
+    const ph = pick(pool);
     scAt++;
-    const img = $('#screen-img');
-    img.src = scNow.src;
-    $('#screen-stamp').textContent = scNow.date ? stamp(scNow.date) : '';
-    $('#screen-cap').textContent = scNow.words || '';
-    if (next !== false) setTimeout(screen, 4200);
-  }
-  let strikes = 0, outs = 0, hits = 0;
-  function scoreboard() {
-    $('#strikes').textContent = '●'.repeat(strikes) + '○'.repeat(2 - Math.min(2, strikes));
-    $('#outs').textContent = '●'.repeat(outs) + '○'.repeat(2 - Math.min(2, outs));
-    $('#hits').textContent = hits;
-  }
-  function strike() {
-    strikes++;
-    if (strikes >= 3) { strikes = 0; outs++; if (outs >= 3) outs = 0; }
-    scoreboard();
-    $('#board').classList.remove('blink'); void $('#board').offsetWidth; $('#board').classList.add('blink');
+    $('#screen-img').src = ph.src;
+    $('#screen-stamp').textContent = ph.date ? stamp(ph.date) : '';
+    $('#screen-cap').textContent = ph.words || '';
+    scT = setTimeout(screen, 5000);
   }
 
-  /* ------------------------------------------------------------------ pitching and hitting */
+  /* ------------------------------------------------------------------ swing */
   const ball = $('#ball'), shadow = $('#shadow');
   const put = (el, x, y, s, o = 1) => { el.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px) scale(${s.toFixed(3)})`; el.style.opacity = o; };
-  let state = 'wait', t0 = 0, swung = false, paused = false, raf = 0, flight = null;
-  const PITCH = 820, WIN = [.8, 1.07];
-  const busy = () => paused || document.hidden || $$('dialog').some(d => d.open);
-  function tick(now) {
-    raf = requestAnimationFrame(tick);
-    if (busy() && state !== 'fly') { if (state === 'pitch' || state === 'windup') { state = 'wait'; t0 = now; put(ball, 0, 0, 0, 0); put(shadow, 0, 0, 0, 0); } return; }
-    const el = now - t0;
-    const { cx, moundY, plateY } = L;
-    if (state === 'wait') { if (!reduced && el > 1100) { state = 'windup'; t0 = now; swung = false; } return; }
-    if (state === 'windup') {
-      put(ball, cx - 11, moundY - 30 - Math.sin(Math.min(1, el / 500) * Math.PI) * 8, .32, Math.min(1, el / 200));
-      if (el > 650) { state = 'pitch'; t0 = now; }
-      return;
-    }
-    if (state === 'pitch') {
-      const p = el / PITCH;
-      const e = Math.pow(Math.min(p, 1.25), 1.35);
-      const y = lerp(moundY - 30, plateY - 58, e), s = .32 + .95 * e * e;
-      put(ball, cx - 11 + Math.sin(p * 3) * 4, y - 11, s);
-      put(shadow, cx - 11, lerp(moundY, plateY - 20, e) - 3, s * .9, .35);
-      $('#zone').classList.toggle('on', p >= WIN[0] && p <= WIN[1] && !swung);
-      if (p > 1.22) {
-        $('#zone').classList.remove('on');
-        put(ball, 0, 0, 0, 0); put(shadow, 0, 0, 0, 0);
-        strike();
-        state = 'wait'; t0 = now;
-      }
-      return;
-    }
-    if (state === 'fly' && flight) {
-      const f = flight, p = Math.min(1, (now - f.t0) / f.dur);
-      const x = lerp(f.x0, f.x1, p), yLine = lerp(f.y0, f.y1, p), y = yLine - Math.sin(p * Math.PI) * f.arc;
-      put(ball, x - 11, y - 11, lerp(1.1, f.s1, Math.pow(p, .7)));
-      const gy = Math.max(yLine, L.wallBottom + 4);
-      put(shadow, x - 11, gy - 3, lerp(.9, f.s1, p), yLine > L.wallBottom ? .3 : 0);
-      if (p >= 1) { flight = null; put(shadow, 0, 0, 0, 0); land(f); }
-    }
-  }
-
-  // A tap is a swing, aimed wherever the tap was.
-  function swing(x, y) {
+  const tween = (dur, fn) => new Promise(res => {
+    const t0 = performance.now();
+    const step = now => { const p = Math.min(1, (now - t0) / dur); fn(p); if (p < 1) requestAnimationFrame(step); else res(); };
+    requestAnimationFrame(step);
+  });
+  let swinging = false;
+  // The pitch comes in, the bat connects, and the ball comes down on a sign, which opens.
+  // About one swing in six goes over the wall, and a home run plays a playlist.
+  async function swing() {
+    if (swinging || $$('dialog').some(d => d.open)) return;
+    swinging = true;
     sfx.wake();
-    const sw = $('#swing');
-    sw.classList.remove('go'); void sw.offsetWidth; sw.classList.add('go');
-    if (reduced) { hit(x, y, true); return; }
-    if (state !== 'pitch' || swung) return;
-    swung = true;
-    const p = (performance.now() - t0) / PITCH;
-    $('#zone').classList.remove('on');
-    if (p >= WIN[0] && p <= WIN[1]) hit(x, y);
-  }
-  function hit(x, y, instant) {
-    const target = targetAt(x, y);
-    hits++; scoreboard();
-    strikes = 0;
-    sfx.crack();
-    document.body.classList.add('hit-shake');
-    setTimeout(() => document.body.classList.remove('hit-shake'), 160);
-    $('#hint').classList.add('gone');
-    const x0 = L.cx, y0 = L.plateY - 60;
-    const ty = target.kind === 'homer' ? Math.min(y, L.wallTop - 10) : y;
-    const dist = Math.hypot(x - x0, ty - y0);
-    flight = { t0: performance.now(), dur: instant ? 1 : 520 + dist * .55, x0, y0, x1: x, y1: ty, arc: target.kind === 'homer' ? dist * .45 : dist * .28, s1: ty < L.wallTop ? .16 : .26, target };
-    state = 'fly';
-  }
-  function targetAt(x, y) {
-    const el = document.elementFromPoint(x, y);
-    const t = el && el.closest('[data-t]');
-    if (t) return { kind: t.dataset.t, el: t };
-    if (y < L.wallTop) return { kind: 'homer' };
-    return { kind: 'field' };
-  }
-
-  // Where the ball came down decides the card.
-  function land(f) {
-    const t = f.target;
-    const el = t.el;
-    if (el) { el.classList.remove('struck'); void el.offsetWidth; el.classList.add('struck'); }
-    put(ball, 0, 0, 0, 0);
-    let c = null;
-    if (t.kind === 'billboard') c = card('w:' + el.dataset.id);
-    else if (t.kind === 'plaque') c = card('d:' + DRAWINGS[+el.dataset.i][0]);
-    else if (t.kind === 'ticker') c = WRITING.length && card('a:' + WRITING[tkAt % WRITING.length].slug);
-    else if (t.kind === 'name') c = card('cv');
-    else if (t.kind === 'homer') { c = nextOf('playlist'); fireworks(f.x1, f.y1); sfx.cheer(); }
-    else if (t.kind === 'screen') { snap(); state = 'wait'; t0 = performance.now(); return; }
-    else c = nextOf();
-    reveal(c);
-  }
-  const nextOf = kind => {
-    const pool = CARDS.filter(c => (!kind || c.kind === kind) && c.kind !== 'cv');
-    const fresh = pool.filter(c => !got.has(c.id));
-    return pick(fresh.length ? fresh : pool);
-  };
-
-  // A hit on the video board sets off the photo booth: four flashes, four pictures.
-  function snap() {
-    const sc = $('.screen');
-    let n = 0;
-    const go = () => {
-      sc.classList.remove('flash'); void sc.offsetWidth; sc.classList.add('flash');
-      screen(false);
-      if (++n < 4) setTimeout(go, 380);
-    };
-    go();
+    const { cx, moundY, plateY } = L;
+    const signs = $$('.sign');
+    const homer = PLAYLISTS.length && Math.random() < 1 / 6;
+    const el = homer ? null : pick(signs);
+    if (!reduced) {
+      await tween(520, p => { const e = Math.pow(p, 1.4); put(ball, cx - 11, lerp(moundY - 30, plateY - 70, e) - 11, .3 + .8 * e * e); });
+      const arc = $('#arc');
+      arc.classList.remove('go'); void arc.offsetWidth; arc.classList.add('go');
+      sfx.crack();
+      document.body.classList.add('hit-shake');
+      setTimeout(() => document.body.classList.remove('hit-shake'), 160);
+      const r = el ? el.getBoundingClientRect() : null;
+      const x1 = r ? r.left + r.width / 2 : rand(L.W * .15, L.W * .85), y1 = r ? r.top + r.height / 2 : rand(L.standsTop + 10, L.wallTop - 14);
+      const x0 = cx, y0 = plateY - 70, dist = Math.hypot(x1 - x0, y1 - y0), archH = dist * (homer ? .5 : .3);
+      await tween(560 + dist * .5, p => {
+        const yl = lerp(y0, y1, p);
+        put(ball, lerp(x0, x1, p) - 11, yl - Math.sin(p * Math.PI) * archH - 11, lerp(1.1, homer ? .14 : .24, Math.pow(p, .7)));
+        put(shadow, lerp(x0, x1, p) - 11, Math.max(yl, L.wallBottom + 4) - 3, lerp(.9, .3, p), yl > L.wallBottom ? .3 : 0);
+      });
+      put(ball, 0, 0, 0, 0); put(shadow, 0, 0, 0, 0);
+      if (el) { el.classList.remove('struck'); void el.offsetWidth; el.classList.add('struck'); }
+      else { fireworks(x1, y1); sfx.cheer(); }
+      await wait(homer ? 900 : 420);
+    }
+    swinging = false;
+    if (homer) playlist(Math.floor(Math.random() * PLAYLISTS.length));
+    else open(SIGNS[+el.dataset.i]);
   }
 
   function fireworks(x, y) {
-    if (reduced) return;
-    for (let i = 0; i < 22; i++) {
+    for (let i = 0; i < 24; i++) {
       const s = document.createElement('i');
       s.className = 'spark';
       s.style.left = x + 'px'; s.style.top = y + 'px';
       s.style.setProperty('--c', pick(['#ef6b2b', '#ffd36b', '#ffffff', '#7fc4ff']));
       park.appendChild(s);
-      const a = rand(0, Math.PI * 2), r = rand(40, 120);
-      s.animate([{ transform: 'translate(0,0) scale(1)', opacity: 1 }, { transform: `translate(${Math.cos(a) * r}px, ${Math.sin(a) * r - 30}px) scale(.3)`, opacity: 0 }], { duration: rand(700, 1100), easing: 'cubic-bezier(.2,.7,.3,1)' }).onfinish = () => s.remove();
+      const a = rand(0, Math.PI * 2), d = rand(40, 130);
+      s.animate([{ transform: 'translate(0,0) scale(1)', opacity: 1 }, { transform: `translate(${Math.cos(a) * d}px, ${Math.sin(a) * d - 30}px) scale(.3)`, opacity: 0 }], { duration: rand(700, 1100), easing: 'cubic-bezier(.2,.7,.3,1)' }).onfinish = () => s.remove();
     }
     $('#crowd').classList.remove('roar'); void $('#crowd').offsetWidth; $('#crowd').classList.add('roar');
   }
 
-  /* ------------------------------------------------------------------ the card you hit */
-  const pop = $('#pop');
-  let popTimer = 0, popCard = null;
-  function reveal(c) {
-    if (!c) { state = 'wait'; t0 = performance.now(); return; }
-    state = 'reveal';
-    popCard = c;
-    const fresh = !got.has(c.id);
-    got.add(c.id); save();
-    pop.innerHTML = `<button class="pop-card${fresh ? ' fresh' : ''}" type="button" aria-label="${esc(c.title)}, open">${cardHTML(c)}</button>`;
-    pop.hidden = false;
-    clearTimeout(popTimer);
-    popTimer = setTimeout(stow, 3600);
-  }
-  // The card flies off into the binder.
-  function stow() {
-    clearTimeout(popTimer);
-    if (pop.hidden) return;
-    const btn = $('#cards-btn').getBoundingClientRect(), pc = $('.pop-card', pop);
-    const r = pc.getBoundingClientRect();
-    const done = () => { pop.hidden = true; pop.innerHTML = ''; count(); $('#cards-btn').classList.remove('bump'); void $('#cards-btn').offsetWidth; $('#cards-btn').classList.add('bump'); state = 'wait'; t0 = performance.now(); };
-    if (reduced) return done();
-    pc.animate([{ transform: 'none', opacity: 1 }, { transform: `translate(${btn.left + btn.width / 2 - (r.left + r.width / 2)}px, ${btn.top + btn.height / 2 - (r.top + r.height / 2)}px) scale(.12) rotate(-12deg)`, opacity: .4 }], { duration: 420, easing: 'cubic-bezier(.5,0,.75,0)' }).onfinish = done;
-  }
-  pop.addEventListener('click', e => {
-    e.stopPropagation();
-    if (e.target.closest('.pop-card') && popCard) { const c = popCard; stow(); openCard(c); }
-    else stow();
-  });
-
   /* ------------------------------------------------------------------ taps */
-  park.addEventListener('pointerdown', e => {
-    if (e.button > 0 || e.target.closest('.pop')) return;
-    e.preventDefault();
-    if (state === 'reveal') return stow();
-    swing(e.clientX, e.clientY);
-  });
-  // From the keyboard, the scoreboard, plaques and billboards just open.
   park.addEventListener('click', e => {
-    if (e.detail !== 0) return;
-    const t = e.target.closest('[data-t]');
-    if (!t) return;
-    const r = t.getBoundingClientRect();
-    hit(r.left + r.width / 2, r.top + r.height / 2, true);
+    if (swinging) return;
+    const sign = e.target.closest('.sign');
+    if (sign) return open(SIGNS[+sign.dataset.i]);
+    if (e.target.closest('#screen')) { const sc = $('#screen'); sc.classList.remove('flash'); void sc.offsetWidth; sc.classList.add('flash'); return screen(); }
+    if (e.target.closest('[data-cv]')) return openCV();
+    if (e.target.closest('#swing') || e.target === park || e.target.closest('.field, .crowd, .sky')) swing();
   });
   addEventListener('keydown', e => {
-    if ((e.key === ' ' || e.key === 'Enter') && document.activeElement === document.body && !$$('dialog').some(d => d.open)) { e.preventDefault(); swing(L.cx + rand(-L.W * .3, L.W * .3), L.wallTop + L.wallH / 2); }
+    if (e.key === ' ' && document.activeElement === document.body && !$$('dialog').some(d => d.open)) { e.preventDefault(); swing(); }
   });
 
   /* ------------------------------------------------------------------ sound */
@@ -478,48 +301,20 @@
       for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * shape(i / d.length);
       const s = ac.createBufferSource(); s.buffer = b; return s;
     };
+    const play = (len, shape, freq, q, vol) => {
+      if (!ac) return;
+      try {
+        const s = noise(len, shape), f = ac.createBiquadFilter(), g = ac.createGain();
+        f.type = 'bandpass'; f.frequency.value = freq; f.Q.value = q; g.gain.value = vol;
+        s.connect(f).connect(g).connect(ac.destination); s.start();
+      } catch (e) { /* quiet */ }
+    };
     return {
       wake() { try { ac = ac || new (window.AudioContext || window.webkitAudioContext)(); if (ac.state === 'suspended') ac.resume(); } catch (e) { ac = null; } },
-      crack() {
-        if (!ac) return;
-        try {
-          const s = noise(.09, t => Math.pow(1 - t, 6)), f = ac.createBiquadFilter(), g = ac.createGain();
-          f.type = 'bandpass'; f.frequency.value = 2200; f.Q.value = .9; g.gain.value = .5;
-          s.connect(f).connect(g).connect(ac.destination); s.start();
-        } catch (e) { /* quiet */ }
-      },
-      cheer() {
-        if (!ac) return;
-        try {
-          const s = noise(2.2, t => Math.sin(Math.PI * Math.min(1, t * 1.6)) * (1 - t * .4)), f = ac.createBiquadFilter(), g = ac.createGain();
-          f.type = 'bandpass'; f.frequency.value = 900; f.Q.value = .5; g.gain.value = .16;
-          s.connect(f).connect(g).connect(ac.destination); s.start();
-        } catch (e) { /* quiet */ }
-      }
+      crack() { play(.09, t => Math.pow(1 - t, 6), 2200, .9, .5); },
+      cheer() { play(2.2, t => Math.sin(Math.PI * Math.min(1, t * 1.6)) * (1 - t * .4), 900, .5, .16); }
     };
   })();
-
-  /* ------------------------------------------------------------------ the binder */
-  const binder = $('#binder');
-  function openBinder() {
-    binder.innerHTML = `<div class="binder">
-      <header class="binder-h"><h2>Cards <span>${[...got].filter(card).length} / ${CARDS.length}</span></h2><button class="close" type="button" aria-label="Close">×</button></header>
-      <div class="pockets">${CARDS.map(c => `<button class="pocket" type="button" data-id="${esc(c.id)}" aria-label="${esc(c.title)}">${cardHTML(c, !got.has(c.id))}</button>`).join('')}</div>
-    </div>`;
-    $('.close', binder).addEventListener('click', () => binder.close());
-    $$('.pocket', binder).forEach(b => b.addEventListener('click', () => {
-      const c = card(b.dataset.id);
-      if (!got.has(c.id)) {
-        got.add(c.id); save(); count();
-        b.innerHTML = cardHTML(c);
-        if (!reduced) b.animate([{ transform: 'rotateY(90deg)' }, { transform: 'rotateY(0)' }], { duration: 260, easing: 'ease-out' });
-        $('.binder-h span', binder).textContent = `${[...got].filter(card).length} / ${CARDS.length}`;
-        setTimeout(() => openCard(c), reduced ? 0 : 320);
-      } else openCard(c);
-    }));
-    if (!binder.open) binder.showModal();
-  }
-  $('#cards-btn').addEventListener('click', openBinder);
 
   /* ------------------------------------------------------------------ closer looks */
   const sheet = $('#sheet');
@@ -549,7 +344,13 @@
         ${pics ? `<div class="sheet-pics">${pics}</div>` : ''}
       </div>
       <nav class="sheet-nav">${prev ? `<a href="#w/${esc(prev.id)}">← ${esc(prev.title)}</a>` : '<span></span>'}${next ? `<a href="#w/${esc(next.id)}">${esc(next.title)} →</a>` : '<span></span>'}</nav>`, true);
-    got.add('w:' + id); save(); count();
+  }
+
+  function openWriting() {
+    showSheet(`<div class="wr"><p class="sheet-meta">Writing</p><ul class="wr-list">${WRITING.map(a => {
+      const href = a.here ? `read.html?c=${encodeURIComponent(a.slug)}` : a.url;
+      return `<li><a href="${esc(href)}"${a.here ? '' : ' target="_blank" rel="noopener"'}>${esc(a.title)}</a><span>${esc([a.outlet, year(a.date)].filter(Boolean).join(', '))}</span></li>`;
+    }).join('')}</ul></div>`);
   }
 
   // The CV is the back of a baseball card.
@@ -564,17 +365,20 @@
       ${C.fact ? `<p class="bb-fact">${esc(C.fact)}</p>` : ''}
     </div>
     <p class="card-foot"><a href="mailto:${esc(S.email)}">Email</a>${S.resume ? `<a href="${esc(S.resume)}">Résumé (PDF)</a>` : ''}${S.links.filter(l => l.label !== 'Every Hall of Famer').map(l => `<a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)}</a>`).join('')}</p>`);
-    got.add('cv'); save(); count();
   }
 
+  // Playlists open one at a time, with arrows through all of them.
+  let plAt = 0;
   function playlist(i) {
-    const p = PLAYLISTS[i];
-    if (!p) return;
+    plAt = (i + PLAYLISTS.length) % PLAYLISTS.length;
+    const p = PLAYLISTS[plAt];
     showSheet(`<div class="pl">
       <img src="${esc(p.cover)}" alt="Cover of ${esc(p.title)}">
       <div><p class="sheet-meta">${esc(p.year || 'Playlist')}</p><h2>${esc(p.title)}</h2>${p.note ? `<p class="words">${esc(p.note)}</p>` : ''}
-      <iframe class="spotify" title="${esc(p.title)} on Spotify" src="https://open.spotify.com/embed/playlist/${esc(p.id)}?utm_source=generator" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe></div>
+      <iframe class="spotify" title="${esc(p.title)} on Spotify" src="https://open.spotify.com/embed/playlist/${esc(p.id)}?utm_source=generator" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
+      ${PLAYLISTS.length > 1 ? `<p class="steps"><button class="step" data-by="-1" type="button" aria-label="Previous playlist">←</button><span>${plAt + 1} / ${PLAYLISTS.length}</span><button class="step" data-by="1" type="button" aria-label="Next playlist">→</button></p>` : ''}</div>
     </div>`);
+    $$('.step', sheet).forEach(b => b.addEventListener('click', () => playlist(plAt + +b.dataset.by)));
   }
 
   // Drawings open one at a time, with arrows through all of them.
@@ -583,7 +387,6 @@
   function drawing(i) {
     lbAt = (i + DRAWINGS.length) % DRAWINGS.length;
     const [id, name, yr] = DRAWINGS[lbAt];
-    got.add('d:' + id); save(); count();
     lb.innerHTML = `<div class="lb"><button class="close" aria-label="Close" type="button">×</button>
       <img src="media/hof/${esc(id)}.jpg" alt="Summer’s drawing of ${esc(name)}">
       <div class="lb-bar"><button class="lb-go" data-by="-1" aria-label="Previous drawing" type="button">←</button><p>${esc(name)}, ${esc(yr)} <span>${lbAt + 1} / ${DRAWINGS.length}</span></p><button class="lb-go" data-by="1" aria-label="Next drawing" type="button">→</button></div>
@@ -606,18 +409,14 @@
   /* ------------------------------------------------------------------ play ball */
   let rT;
   addEventListener('resize', () => { clearTimeout(rT); rT = setTimeout(layout, 120); });
-  document.addEventListener('visibilitychange', () => { t0 = performance.now(); });
   light();
   layout();
-  scoreboard();
   screen();
   nowLine();
   weather();
   astros();
   setInterval(() => { light(); nowLine(); }, 60000);
   setInterval(astros, 120000);
-  (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => { layout(); ticker(); });
-  t0 = performance.now();
-  raf = requestAnimationFrame(tick);
+  (document.fonts ? document.fonts.ready : Promise.resolve()).then(layout);
   route();
 })();

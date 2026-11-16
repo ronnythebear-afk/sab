@@ -21,21 +21,15 @@
 </head>
 <body class="game">
 <!--
-  The site is a ballpark under the Austin sky, at whatever time it is in Austin. Tap to swing,
-  and the ball goes where you tapped: the billboards are the work, the ticker is the writing,
-  the plaques are Every Hall of Famer, the video board is the photo booth and the old hard
-  drive, and over the wall is a home run, which plays a playlist. Every hit is a card, and
-  the binder holds all of them.
+  A ballpark under the Austin sky, at whatever time it is in Austin. Everything is a sign on
+  the outfield wall. Tap a sign to open it, or press Swing and the ball hits one at random.
 -->
-<main class="park" id="park" aria-label="A ballpark. Tap to swing."></main>
+<main class="park" id="park" aria-label="A ballpark"></main>
 
 <nav class="hud-top" aria-label="Summer Anne Burton">
   <a href="#cv">CV</a><a id="mail">Email</a>
 </nav>
-<p class="hint" id="hint" aria-hidden="true">Tap to swing</p>
-<button class="cards-btn" id="cards-btn" type="button">Cards <b id="got">0</b>/<span id="of">0</span></button>
 
-<dialog class="binder-d" id="binder" aria-label="Cards"></dialog>
 <dialog class="sheet-d" id="sheet" aria-label="A closer look"></dialog>
 <dialog class="lightbox" id="lightbox" aria-label="A closer look"></dialog>
 

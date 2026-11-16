@@ -1,15 +1,10 @@
 # summeranneburton.com
 
-Summer's website is a ballpark seen from home plate, under the Austin sky at whatever time it is in Austin: blue in the day, golden at sunset, lights on at night. Pitches keep coming. Tap to swing, and the ball goes where you tapped.
+Summer's website is a ballpark under the Austin sky, at whatever time it is in Austin: blue in the day, golden at sunset, lights on at night.
 
-- The billboards on the outfield wall are the work.
-- The ticker under the scoreboard runs the writing. A hit there opens the headline that's running.
-- The plaques along the stands are Every Hall of Famer.
-- Over the wall is a home run, and a home run plays a playlist.
-- The video board shows the selfies and the old hard drive photos. A hit there sets off the photo booth.
-- The name in lights is the CV.
+Everything is a sign on the outfield wall: the work, Writing, Every Hall of Famer and Playlists. Tap a sign to open it. Or press Swing, and the ball hits a sign at random and that one opens. About one swing in six is a home run, and a home run plays a playlist.
 
-The scoreboard also has the Austin weather and time, and the Astros score when they're playing. Every hit is a card, and the Cards binder (bottom right) holds all of them, face down until they're hit. Any card can be opened from the binder, so nothing needs a hit to be seen. CV and Email are always at the top right.
+The scoreboard has her name (tap it for the CV), the Austin weather and time, the Astros score when they're playing, and a screen that runs the selfies and old hard drive photos (tap it for another). CV and Email are always at the top right.
 
 Nothing on the site is written for her. Text is a plain fact (a name, a client, a year), her own words, or a quote from coverage with who said it.
 
@@ -19,7 +14,7 @@ There's no build step. The site is the `site/` folder, as is. HOSTING.md covers 
 
 Everything can be done on github.com, in the browser.
 
-- **An article.** Open `articles.txt`, click the pencil, paste the link on a new line, and Commit changes. The site makes its own clean copy (words and pictures, no ads) and puts it on the ticker.
+- **An article.** Open `articles.txt`, click the pencil, paste the link on a new line, and Commit changes. The site makes its own clean copy (words and pictures, no ads) and adds it to Writing.
 - **A playlist.** Same thing in `playlists.txt`, with a Spotify playlist link.
 - **Old photos.** Open the `add/photos` folder, then Add file, then Upload files. Drag them in and Commit changes. Name a file what you want its caption to say ("my tiny christmas tree.jpg"), or leave the camera's name for no caption. The date comes from the photo.
 - **Selfies.** Same, in `add/selfies`.
@@ -30,7 +25,7 @@ To take something out: delete its line from `articles.txt` or `playlists.txt`, o
 
 ## Changing words
 
-`site/content/content.js` has the work (the billboards), the CV card and the drawings. Each piece of work can have `words` (yours) and `quotes` (other people's, with `who`).
+`site/content/content.js` has the work (the signs), the CV card and the drawings. Each piece of work can have `words` (yours) and `quotes` (other people's, with `who`).
 
 ## On your own computer
 
