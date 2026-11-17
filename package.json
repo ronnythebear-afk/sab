@@ -5,6 +5,6 @@
   "description": "Summer Anne Burton's website.",
   "scripts": {
     "preview": "npx --yes serve site",
-    "add": "sh tools/add.sh"
+    "add": "node tools/drop.mjs && python3 tools/pics.py"
   }
 }

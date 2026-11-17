@@ -1,6 +1,10 @@
 /*
-  The words on the site. Writing, playlists, the photo booth and the old hard drive have
-  their own files, made by the tools (see README.md).
+  The words on the site that don't change often: the work (the Work deck), the CV, the
+  drawings (the Art deck) and your links. Everything else is in feed.js, which fills up from
+  drop.txt and the drop folder.
+
+  available: a line in your own words for when you want to say you're open to work, like
+  "Taking freelance projects for spring." It shows next to Email. Empty means it doesn't show.
 
   No lines are written for you here. Text is a plain fact (a name, a client, a year), your
   own words (words), or a quote from coverage with who said it (quotes).
@@ -10,6 +14,7 @@ window.SAB = {
   "email": "summer.burton@gmail.com",
   "role": "Creative director",
   "city": "Austin",
+  "available": "",
   "links": [
     {
       "label": "LinkedIn",
@@ -178,6 +183,71 @@ window.SAB = {
         {
           "label": "Read it here",
           "url": "read.html?c=prompting-creativity"
+        }
+      ]
+    },
+    {
+      "id": "tenderly",
+      "title": "Tenderly",
+      "client": "Medium",
+      "year": "2019–2021",
+      "images": [],
+      "words": [
+        "I commissioned and edited over 1000 pieces in less than two years, covering recipes, environmental reporting, personal essays, travelogues, photo essays, and more from a “friendly + radical” animal-centric perspective. We developed over 30,000 subscribers on Medium and more across social channels."
+      ],
+      "links": [
+        {
+          "label": "Tenderly on Medium",
+          "url": "https://tenderly.medium.com"
+        }
+      ]
+    },
+    {
+      "id": "originals",
+      "title": "BuzzFeed Originals",
+      "client": "BuzzFeed",
+      "year": "2012–2019",
+      "images": [
+        {
+          "src": "media/work/buzzfeed-team.jpg",
+          "alt": "A BuzzFeed team cheering around a laptop"
+        }
+      ],
+      "words": [
+        "I spent seven years at BuzzFeed (2012-2019) with twice as many titles, culminating as Head of BuzzFeed Originals, managing a department of nearly 200 creatives across both editorial and marketing."
+      ],
+      "quotes": [
+        {
+          "text": "Summer helped us crack our distributed model, which has had an incredible impact on our business and the industry.",
+          "who": "Frank Cooper, BuzzFeed CMO, in Adweek"
+        }
+      ],
+      "links": [
+        {
+          "label": "Adweek",
+          "url": "https://www.adweek.com/brand-marketing/omg-buzzfeed-names-its-first-creative-executive-producer-169881/"
+        }
+      ]
+    },
+    {
+      "id": "video",
+      "title": "That One Coworker & Whine About It",
+      "client": "BuzzFeed Video",
+      "year": "2014–2016",
+      "images": [
+        {
+          "src": "media/work/whine-about-it.jpg",
+          "alt": "Matt Bellassai at his desk at BuzzFeed with a glass of wine",
+          "caption": "Types Of Co-Workers That Are The Absolute Worst: Whine About It. BuzzFeedVideo."
+        }
+      ],
+      "words": [
+        "Produced our first hit Facebook video series (That One Coworker; Whine About It); appeared as ‘da boss."
+      ],
+      "links": [
+        {
+          "label": "The episode on YouTube",
+          "url": "https://www.youtube.com/watch?v=6HwqScn9fHM"
         }
       ]
     }

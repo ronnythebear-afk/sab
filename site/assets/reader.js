@@ -1,6 +1,7 @@
 /* Shows one saved copy from content/clips/: the words and pictures, without the ads. */
 (function () {
-  const W = window.SAB_WRITING || [];
+  // Her articles with a saved copy are in feed.js with a slug.
+  const W = (window.SAB_FEED || []).filter(a => a.type === 'article').map(a => ({ ...a, here: !!a.slug }));
   const main = document.getElementById('reader');
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', '\'': '&#39;' }[c]));
   const slug = new URLSearchParams(location.search).get('c') || '';

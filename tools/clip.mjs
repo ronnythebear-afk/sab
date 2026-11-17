@@ -1,21 +1,16 @@
 // Makes a clean copy of an article for the reader: just the words and the pictures, no ads,
-// with every image saved here so it can't break later.
+// with every image saved here so it can't break later. tools/drop.mjs uses it for articles
+// Summer wrote. To copy one by hand:
 //
-//   node tools/clip.mjs --all
-//     Reads articles.txt, copies every article that doesn't have a copy yet, and writes
-//     site/content/writing.js, the list the site shows, in the order of articles.txt.
-//
-//   node tools/clip.mjs <url> --slug some-name [--force]
-//     Copies one article. --force makes a new copy even if there is one already.
+//   node tools/clip.mjs <url> [--slug some-name]
 //
 // It tries the article's own page first. If that's gone or blocked, it asks the Internet
 // Archive for its saved copy. Pictures that won't load from either place are left out.
 // Needs Node 18 or newer. No packages to install.
 import fs from 'node:fs';
 import path from 'node:path';
-import vm from 'node:vm';
 import { execFileSync } from 'node:child_process';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const site = path.join(root, 'site');
@@ -187,56 +182,19 @@ async function saveImages(slug, blocks, snapshot) {
   return out;
 }
 
-// articles.txt: one link per line, optionally followed by | title | outlet | year.
-const listFile = path.join(root, 'articles.txt');
-function readList() {
-  if (!fs.existsSync(listFile)) return [];
-  return fs.readFileSync(listFile, 'utf8').split('\n').map(l => l.trim()).filter(l => l && !l.startsWith('#')).map(l => {
-    const [url, title = '', outlet = '', year = ''] = l.split('|').map(x => x.trim());
-    return { url, title, outlet, year };
-  }).filter(a => /^https?:\/\//.test(a.url));
-}
 const OUTLETS = { 'buzzfeed.com': 'BuzzFeed', 'buzzfeednews.com': 'BuzzFeed News', 'not.fangraphs.com': 'NotGraphs', 'fangraphs.com': 'FanGraphs', 'medium.com': 'Medium', 'thehairpin.com': 'The Hairpin', 'praytellagency.com': 'Praytell' };
-function outletOf(url) {
+export function outletOf(url) {
   let host = '';
   try { host = new URL(url.replace(/^https?:\/\/web\.archive\.org\/web\/[^/]+\//, '')).hostname.replace(/^www\./, ''); } catch (e) { return ''; }
   return OUTLETS[host] || host;
 }
-function slugOf(url) {
+export function slugOf(url) {
   const tail = new URL(url).pathname.split('/').filter(Boolean).pop() || new URL(url).hostname;
   return tail.replace(/\.[a-z]+$/i, '').replace(/[^a-z0-9-]+/gi, '-').replace(/^-+|-+$/g, '').toLowerCase().slice(0, 80);
 }
-function savedCopies() {
-  const byUrl = new Map();
-  for (const f of fs.readdirSync(clipDir).filter(f => f.endsWith('.js'))) {
-    const ctx = { window: {} };
-    try { vm.runInNewContext(fs.readFileSync(path.join(clipDir, f), 'utf8'), ctx); } catch (e) { continue; }
-    if (ctx.window.CLIP && ctx.window.CLIP.url) byUrl.set(ctx.window.CLIP.url, ctx.window.CLIP);
-  }
-  return byUrl;
-}
-const titleFromSlug = s => s.replace(/-[0-9a-f]{8,}$/, '').split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+export { get, decode, text };
 
-// The list the site shows: everything in articles.txt, in that order. Articles with a copy
-// open in the reader; the rest open the original.
-function writeWriting() {
-  const copies = savedCopies();
-  const list = readList().map(a => {
-    const c = copies.get(a.url);
-    return {
-      slug: c ? c.slug : slugOf(a.url),
-      url: a.url,
-      title: a.title || (c && c.title) || titleFromSlug(slugOf(a.url)),
-      outlet: a.outlet || (c && c.outlet) || outletOf(a.url),
-      date: a.year || (c && c.date) || '',
-      here: !!c
-    };
-  });
-  fs.writeFileSync(path.join(site, 'content', 'writing.js'), '// Made by tools/clip.mjs from articles.txt. Edit that file, not this one.\nwindow.SAB_WRITING = ' + JSON.stringify(list, null, 2) + ';\n');
-  return list;
-}
-
-async function clipOne(url, slug, extra = {}) {
+export async function clipOne(url, slug, extra = {}) {
   let page, source = 'original', parsed;
   try {
     // Some old sites now belong to someone else (The Hairpin's address sells casino ads).
@@ -262,35 +220,12 @@ async function clipOne(url, slug, extra = {}) {
   fs.mkdirSync(clipDir, { recursive: true });
   fs.writeFileSync(path.join(clipDir, slug + '.js'), '// A clean copy made by tools/clip.mjs. Fix typos here if you like.\nwindow.CLIP = ' + JSON.stringify(clip, null, 1) + ';\n');
   console.log(`  saved "${clip.title}" (${blocks.length} pieces, from the ${source})`);
+  return clip;
 }
 
-async function main() {
-  const args = process.argv.slice(2);
-  const flag = k => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : ''; };
-  const force = args.includes('--force');
-  const jobs = [];
-  if (args.includes('--index')) { writeWriting(); console.log('Rebuilt writing.js.'); return; }
-  if (args.includes('--all')) {
-    const copies = savedCopies();
-    for (const a of readList()) {
-      if (!force && copies.has(a.url)) continue;
-      const slug = copies.has(a.url) ? copies.get(a.url).slug : slugOf(a.url);
-      jobs.push([a.url, slug, { title: a.title, outlet: a.outlet, date: a.year }]);
-    }
-  } else if (args[0] && /^https?:/.test(args[0])) {
-    const slug = flag('--slug') || new URL(args[0]).pathname.split('/').filter(Boolean).pop().replace(/[^a-z0-9-]/gi, '-').toLowerCase();
-    jobs.push([args[0], slug, {}]);
-  } else {
-    console.log('Usage: node tools/clip.mjs --all   or   node tools/clip.mjs <url> --slug name');
-    return;
-  }
-  let ok = 0;
-  for (const [url, slug, extra] of jobs) {
-    console.log(`${slug}:`);
-    try { await clipOne(url, slug, extra); ok++; } catch (e) { console.log(`  couldn't make a copy: ${e.message}`); }
-  }
-  writeWriting();
-  console.log(`Done. ${ok} of ${jobs.length} copied.`);
+// Run by hand: node tools/clip.mjs <url> [--slug name]
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  const args = process.argv.slice(2), i = args.indexOf('--slug');
+  if (!args[0] || !/^https?:/.test(args[0])) console.log('Usage: node tools/clip.mjs <url> [--slug name]');
+  else clipOne(args[0], i >= 0 ? args[i + 1] : slugOf(args[0])).catch(e => { console.error(`couldn't make a copy: ${e.message}`); process.exit(1); });
 }
-
-main().catch(e => { console.error(e); process.exit(1); });

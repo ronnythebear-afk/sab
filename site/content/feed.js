@@ -1,0 +1,24 @@
+// Made by tools/drop.mjs and tools/pics.py, newest first. One thing per line. Delete a line to take it out.
+window.SAB_FEED = [
+ {"id":"a-prompting-creativity","type":"article","date":"2023-05-04","title":"Prompting Creativity: How Praytell Is Collaborating With AI","outlet":"Praytell","url":"https://www.praytellagency.com/blog/prompting-creativity-how-praytell-is-collaborating-with-ai","slug":"prompting-creativity"},
+ {"id":"a-what-vine-did-for-us","type":"article","date":"2016-10-27","title":"What Vine Did For Us","outlet":"BuzzFeed","url":"https://www.buzzfeed.com/summeranne/what-vine-did-for-us","slug":"what-vine-did-for-us"},
+ {"id":"p-75BtXdY8McxsGT6Ab7LxNP","type":"playlist","date":"2015","title":"What Austin Sounds Like To Me","text":"Songs from Austin (more or less) that sound like Austin to me. I’ve seen most of these artists live, and some of them (Spoon, Okkervil River, Kelly Willis) at least 20 times.","url":"https://open.spotify.com/playlist/75BtXdY8McxsGT6Ab7LxNP","spotify":"75BtXdY8McxsGT6Ab7LxNP","img":"media/crate/75BtXdY8McxsGT6Ab7LxNP.jpg"},
+ {"id":"a-social-networking-a-love-story","type":"article","date":"2014-12-18","title":"How I Grew Up On The Internet","outlet":"BuzzFeed","url":"https://www.buzzfeednews.com/article/summeranne/social-networking-a-love-story","slug":"social-networking-a-love-story"},
+ {"id":"i-2014-11-07-today-i-missed-california","type":"pic","date":"2014-11-07","text":"Today I missed California.","img":"media/pics/2014-11-07-today-i-missed-california.jpg"},
+ {"id":"i-2014-08-26-bye","type":"pic","date":"2014-08-26","text":"Bye.","img":"media/pics/2014-08-26-bye.jpg"},
+ {"id":"i-2014-07-01-goodnight","type":"pic","date":"2014-07-01","text":"Goodnight.","img":"media/pics/2014-07-01-goodnight.jpg"},
+ {"id":"i-2014-06-10-sigh","type":"pic","date":"2014-06-10","text":"Sigh.","img":"media/pics/2014-06-10-sigh.jpg"},
+ {"id":"a-crush-mixtapes","type":"article","date":"2014-04-21","title":"The Fine Art Of Mixtape Seduction","outlet":"BuzzFeed","url":"https://www.buzzfeed.com/summeranne/crush-mixtapes","slug":"crush-mixtapes"},
+ {"id":"p-0CACen0O1EEG8PixwuJ7V8","type":"playlist","date":"2014","title":"~FOREVER FAVS~","text":"My favorite songs EVER.","url":"https://open.spotify.com/playlist/0CACen0O1EEG8PixwuJ7V8","spotify":"0CACen0O1EEG8PixwuJ7V8","img":"media/crate/0CACen0O1EEG8PixwuJ7V8.jpg"},
+ {"id":"p-6JQWKIQNfUZCu6EywACUPA","type":"playlist","date":"2014","title":"got my mind (cas)set(te) on you","text":"Songs that belong on tapes for cool girls.","url":"https://open.spotify.com/playlist/6JQWKIQNfUZCu6EywACUPA","spotify":"6JQWKIQNfUZCu6EywACUPA","img":"media/crate/6JQWKIQNfUZCu6EywACUPA.jpg"},
+ {"id":"p-40vaInFTrXTtqpxttvz7o8","type":"playlist","date":"2014","title":"slides into your DMs like","text":"A mix about flirty favs and internet crushes. ;)","url":"https://open.spotify.com/playlist/40vaInFTrXTtqpxttvz7o8","spotify":"40vaInFTrXTtqpxttvz7o8","img":"media/crate/40vaInFTrXTtqpxttvz7o8.jpg"},
+ {"id":"a-the-year-without-esme","type":"article","date":"2012-12-31","title":"The Year Without Esme","outlet":"BuzzFeed","url":"https://www.buzzfeed.com/summeranne/the-year-without-esme","slug":"the-year-without-esme"},
+ {"id":"p-6FGYSkhWBIJA8Lkqx1dEjz","type":"playlist","date":"2012","title":"texas -> nyc, with love","text":"About leaving Texas and moving to New York. Listen in order.","url":"https://open.spotify.com/playlist/6FGYSkhWBIJA8Lkqx1dEjz","spotify":"6FGYSkhWBIJA8Lkqx1dEjz","img":"media/crate/6FGYSkhWBIJA8Lkqx1dEjz.jpg"},
+ {"id":"i-2011-08-27-she-sleeps-behind-my-knees","type":"pic","date":"2011-08-27","text":"She sleeps behind my knees.","img":"media/pics/2011-08-27-she-sleeps-behind-my-knees.jpg"},
+ {"id":"i-2011-05-14-horns","type":"pic","date":"2011-05-14","text":"Horns!","img":"media/pics/2011-05-14-horns.jpg"},
+ {"id":"i-2011-03-20-sxsw-antidote","type":"pic","date":"2011-03-20","text":"Sxsw antidote","img":"media/pics/2011-03-20-sxsw-antidote.jpg"},
+ {"id":"i-2011-03-20-ted-leo","type":"pic","date":"2011-03-20","text":"Ted Leo","img":"media/pics/2011-03-20-ted-leo.jpg"},
+ {"id":"p-6X1c1V8Xuqmm2ENDcXGFJF","type":"playlist","date":"2011","title":"imaginary omaha","text":"About Omaha, a city I hold very close to my heart despite (because?) never having been there.","url":"https://open.spotify.com/playlist/6X1c1V8Xuqmm2ENDcXGFJF","spotify":"6X1c1V8Xuqmm2ENDcXGFJF","img":"media/crate/6X1c1V8Xuqmm2ENDcXGFJF.jpg"},
+ {"id":"i-2010-12-18-sixteen-miniature-carrot-cakes","type":"pic","date":"2010-12-18","text":"Sixteen miniature carrot cakes","img":"media/pics/2010-12-18-sixteen-miniature-carrot-cakes.jpg"},
+ {"id":"i-2010-12-07-my-tiny-owl-studded-christmas-tree","type":"pic","date":"2010-12-07","text":"My tiny, owl-studded Christmas tree","img":"media/pics/2010-12-07-my-tiny-owl-studded-christmas-tree.jpg"}
+];

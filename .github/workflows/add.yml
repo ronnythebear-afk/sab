@@ -1,10 +1,10 @@
-# When articles.txt, playlists.txt or anything in add/ changes, this copies the new articles,
-# fetches the new playlists, puts the new photos in, and saves the result back here.
+# When drop.txt or the drop folder changes, this turns what's there into cards on the site
+# (tools/drop.mjs for links and words, tools/pics.py for pictures) and saves the result here.
 name: Add new things
 on:
   push:
     branches: [main]
-    paths: ['articles.txt', 'playlists.txt', 'add/**']
+    paths: ['drop.txt', 'drop/**']
   workflow_dispatch:
 permissions:
   contents: write
@@ -22,8 +22,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: pip install pillow pillow-heif "opencv-python-headless<5"
-      - run: sh tools/add.sh
+      - run: pip install pillow pillow-heif
+      - run: node tools/drop.mjs
+      - run: python3 tools/pics.py
       - name: Save what changed
         run: |
           git config user.name "github-actions[bot]"
