@@ -21,8 +21,8 @@
 </head>
 <body class="table">
 <!--
-  A page with cards on it. Everything is a card in one of four decks: I Work, II Images,
-  III Words and IV Baseball drawings, newest on top. Tap a deck to deal its next card. Cards
+  A page with cards on it. Everything is a card in one of five decks: I Work, II Images,
+  III Words, IV Baseball drawings and V Press, newest on top. Tap a deck to deal its next card. Cards
   can be moved and flicked around, and open when tapped. Pull a reading lays out five cards
   face down. Radio shuffles a Spotify playlist.
 -->
@@ -34,7 +34,7 @@
     <span class="avail" id="avail" hidden></span><button class="radio" id="radio" type="button" aria-pressed="false" hidden><i class="eq" aria-hidden="true"><b></b><b></b><b></b></i>Radio</button><a href="#cv" id="cv-link">CV</a><a id="mail" class="mail">Email</a>
   </nav>
 </header>
-<div class="player" id="player" hidden><div id="spot"></div><button class="shuffle" id="shuffle" type="button">Shuffle</button></div>
+<div class="player" id="player" hidden><div id="spot"></div><p class="player-row"><button class="shuffle" id="shuffle" type="button">Shuffle</button><a class="spot-out" id="spot-out" target="_blank" rel="noopener">Open in Spotify ↗</a></p></div>
 
 <h1 class="bigname" id="bigname"></h1>
 <main class="cards" id="cards" aria-label="Cards on the page"></main>

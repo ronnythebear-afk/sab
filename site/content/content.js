@@ -6,6 +6,8 @@
   available: a line in your own words for when you want to say you're open to work, like
   "Taking freelance projects for spring." It shows next to Email. Empty means it doesn't show.
 
+  card is the CV. press is coverage of you; each piece is a card on the Press deck too.
+
   No lines are written for you here. Text is a plain fact (a name, a client, a year), your
   own words (words), or a quote from coverage with who said it (quotes).
 */
@@ -254,73 +256,48 @@ window.SAB = {
   ],
   "card": {
     "position": "Creative director",
-    "team": "Austin",
-    "vitals": [
-      [
-        "Home",
-        "Austin, Tex."
-      ],
-      [
-        "Plays",
-        "Drums"
-      ],
-      [
-        "Team",
-        "Astros"
-      ]
-    ],
+    "home": "Austin, Tex.",
+    "intro": "I like liking things. I like a lot of things, but I especially like animals, sad songs, breakfast tacos, seeing movies in the theater, the Houston Astros, first kisses, biscuits, and the sweet + soft parts of life.",
     "rows": [
       [
         "1999",
         "Girl Games",
-        "Web editor"
+        "Web editor",
+        ""
       ],
       [
         "2003–11",
         "BookPeople",
-        "Barista to buyer"
+        "Barista to buyer",
+        ""
       ],
       [
-        "2010–12",
-        "Freelance",
-        "Illustrator, writer"
-      ],
-      [
-        "2011–",
-        "Every Hall of Famer",
-        "Artist"
+        "2010–",
+        "Freelance and Every Hall of Famer",
+        "Illustrator, writer",
+        "Drawing every single member of the National Baseball Hall of Fame."
       ],
       [
         "2012–19",
         "BuzzFeed",
-        "Weekend editor to Head of BuzzFeed Originals"
+        "Weekend editor to Head of BuzzFeed Originals",
+        "Seven years with twice as many titles. Along the way I was lucky enough to meet Hanson, Pedro Pascal, Madonna, Issa Rae, Andrew Keegan, and Grumpy Cat."
       ],
       [
         "2019–21",
         "Tenderly",
-        "Founder, editor in chief"
+        "Founder, editor in chief",
+        "I commissioned and edited over 1000 pieces in less than two years."
       ],
       [
         "2022–",
         "Praytell",
-        "Creative director"
+        "Creative director",
+        "Clairol, La Marca Prosecco, Air New Zealand, If You Care, Prime Video"
       ]
     ],
-    "totals": [
-      [
-        "BuzzFeed posts",
-        "1,249"
-      ],
-      [
-        "Tenderly pieces edited",
-        "1,000+"
-      ],
-      [
-        "Creatives led",
-        "~200"
-      ]
-    ],
-    "fact": "I have also been a waitress, toy store clerk, a hair salon receptionist, a writer at a now defunct website for tweens (when I was 16!), and a stablehand (my first job)."
+    "fact": "I have also been a waitress, toy store clerk, a hair salon receptionist, a writer at a now defunct website for tweens (when I was 16!), and a stablehand (my first job).",
+    "quote": "A colleague once described me as \"terrifyingly kind,\" and I take that as an enormous compliment."
   },
   "hof": {
     "url": "https://everyhalloffamer.tumblr.com",
@@ -471,5 +448,37 @@ window.SAB = {
         2010
       ]
     ]
-  }
+  },
+  "press": [
+    {
+      "outlet": "ESPN Page 2",
+      "year": "2011",
+      "title": "Illustrator Summer Anne Burton takes on big project",
+      "url": "https://www.espn.com/espn/page2/story?page=lukas%2F110519_every_hall_of_famer&sportCat=mlb"
+    },
+    {
+      "outlet": "Deadspin",
+      "year": "2011",
+      "title": "One artist’s effort to draw all 295 members of the Baseball Hall of Fame",
+      "url": "http://deadspin.com/5844927/a-sampling-from-one-artists-effort-to-draw-all-295-members-of-the-baseball-hall-of-fame/gallery/"
+    },
+    {
+      "outlet": "Texas Monthly",
+      "year": "2014",
+      "title": "101 Sure Signs That Summer Anne Burton Is From Texas",
+      "url": "https://www.texasmonthly.com/arts-entertainment/101-sure-signs-that-summer-anne-burton-is-from-texas/"
+    },
+    {
+      "outlet": "The Hairpin",
+      "year": "2014",
+      "title": "Internet Work and Invisible Labor: An Interview With Summer Anne Burton",
+      "url": "https://web.archive.org/web/2014/https://www.thehairpin.com/2014/01/internet-work-and-invisible-labor-an-interview-with-summer-anne-burton/"
+    },
+    {
+      "outlet": "Adweek",
+      "year": "2016",
+      "title": "BuzzFeed Names Its First Executive Creative Producer",
+      "url": "https://www.adweek.com/brand-marketing/omg-buzzfeed-names-its-first-creative-executive-producer-169881/"
+    }
+  ]
 };

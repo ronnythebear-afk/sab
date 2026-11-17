@@ -1,17 +1,18 @@
 # summeranneburton.com
 
-Summer's website is a printed page with cards on it: paper, ink, hairline rules and one red for the numbers. A masthead runs across the top with the date in Austin, her name is set huge across the foot of the page like a title on a poster, and the decks are listed down the right side like a contents page. A small tag by the cursor says what a click will do. Everything is a card, in four decks, newest on top:
+Summer's website is a printed page with cards on it: paper, ink, hairline rules and one red for the numbers. A masthead runs across the top with the date in Austin, her name is set huge across the foot of the page like a title on a poster, and the decks are listed down the right side like a contents page. A small tag by the cursor says what a click will do. Everything is a card, in five decks, newest on top:
 
 - **Work**: the work, Praytell and before
 - **Images**: pictures, and Instagram posts
 - **Words**: articles she wrote, things she's sharing, posts from X, thoughts
 - **Baseball drawings**: Every Hall of Famer
+- **Press**: coverage of her, from `press` in content.js (also listed at the end of the CV)
 
 Tap a deck to deal its next card. Drag a card to move it, flick it and it slides. Tap a card to open it, with arrows through the rest of its deck. When the page opens, the newest card from each deck is dealt, so the table starts with what's new.
 
 **Pull a reading** clears the table and lays out five cards face down in a cross, like a tarot reading: Work in the middle, a baseball drawing above, an image and words either side, and any deck below. Tap a card to turn it over, tap it again to open it.
 
-**Radio** plays a Spotify playlist on shuffle: a random track, then another when that one ends, with a Shuffle button to skip. Visitors logged in to Spotify hear whole songs; everyone else hears Spotify's previews.
+**Radio** plays a Spotify playlist on shuffle: a random track, then another when that one ends, with a Shuffle button to skip and a link out to the playlist. Visitors logged in to Spotify hear whole songs; everyone else hears Spotify's previews. If Spotify's player script can't load (some previews block it), the radio falls back to a plain Spotify embed of a random track, and Shuffle swaps in another.
 
 At the top: her picture (tap it and the photo booth takes another), name, Radio, CV and Email.
 

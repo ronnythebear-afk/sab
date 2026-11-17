@@ -33,15 +33,17 @@
     { key: 'work', num: 'I', name: 'Work' },
     { key: 'images', num: 'II', name: 'Images' },
     { key: 'words', num: 'III', name: 'Words' },
-    { key: 'drawings', num: 'IV', name: 'Baseball drawings' }
+    { key: 'drawings', num: 'IV', name: 'Baseball drawings' },
+    { key: 'press', num: 'V', name: 'Press' }
   ];
   const SUIT = Object.fromEntries(SUITS.map(s => [s.key, s]));
-  const suitOf = c => c.type === 'work' ? 'work' : c.type === 'art' ? 'drawings'
+  const suitOf = c => c.type === 'work' ? 'work' : c.type === 'art' ? 'drawings' : c.type === 'press' ? 'press'
     : c.type === 'pic' || (c.type === 'post' && c.source === 'Instagram') ? 'images' : 'words';
   const CARDS = [
     ...S.work.map(w => ({ id: 'w-' + w.id, type: 'work', w, title: w.title, sub: w.client, date: w.year, img: ((w.images || [])[0] || {}).src })),
     ...FEED.filter(f => f && f.type && f.type !== 'playlist'),
-    ...DRAW.map(([id, name, yr]) => ({ id: 'd-' + id, type: 'art', title: name, date: yr, img: `media/hof/${id}.jpg` }))
+    ...DRAW.map(([id, name, yr]) => ({ id: 'd-' + id, type: 'art', title: name, date: yr, img: `media/hof/${id}.jpg` })),
+    ...(S.press || []).map((x, i) => ({ id: 'n-' + i, type: 'press', title: x.title, outlet: x.outlet, date: x.year, url: x.url }))
   ].map(c => ({ ...c, suit: suitOf(c) }));
   const DECK = {};
   SUITS.forEach(s => {
@@ -56,7 +58,7 @@
   // Every card has the same caption line across the top: its number, its deck, its date.
   function front(c) {
     const s = SUIT[c.suit];
-    const head = `<span class="hdr"><b>${s.num}</b><span>${esc(s.name)}</span><i>${esc(c.type === 'work' || c.type === 'art' ? c.date : when(c.date))}</i></span>`;
+    const head = `<span class="hdr"><b>${s.num}</b><span>${esc(s.name)}</span><i>${esc(['work', 'art', 'press'].includes(c.type) ? c.date : when(c.date))}</i></span>`;
     let h = '';
     if (c.type === 'work') h = c.img
       ? `<span class="ph"><img src="${esc(c.img)}" alt="" draggable="false"></span><span class="ttl">${esc(c.title)}</span><span class="cap">${esc(c.sub)}</span>`
@@ -67,11 +69,12 @@
     else if (c.type === 'article') h = `<span class="cap">${esc(c.outlet)}</span><span class="ttl">${esc(c.title)}</span><span class="cap end">By Summer Anne Burton</span>`;
     else if (c.type === 'link') h = `<span class="cap">Shared from ${esc(c.site || '')}</span>${c.img ? `<span class="ph wide"><img src="${esc(c.img)}" alt="" draggable="false"></span>` : ''}<span class="ttl">${esc(c.title)}</span>${c.text ? `<span class="note">${esc(c.text)}</span>` : ''}`;
     else if (c.type === 'art') h = `<span class="ph drawn"><img src="${esc(c.img)}" alt="" draggable="false"></span><span class="ttl sm">${esc(c.title)}</span>`;
+    else if (c.type === 'press') h = `<span class="outlet">${esc(c.outlet)}</span><span class="ttl">${esc(c.title)}</span>`;
     return `<span class="face front">${head}<span class="in">${h}</span></span>`;
   }
   // The back, like an old tarot deck: crosshatching, and the deck's number in a ring.
   const back = c => `<span class="face back"><i class="hatch"></i><span class="medal"><b>${SUIT[c.suit].num}</b></span></span>`;
-  const label = c => ({ work: `${c.title}, ${c.sub}`, post: (c.text || '').slice(0, 80), pic: c.text || 'A picture', thought: (c.text || '').slice(0, 80), article: c.title, link: `Shared: ${c.title}`, art: `Drawing of ${c.title}` }[c.type] || c.title || '');
+  const label = c => ({ work: `${c.title}, ${c.sub}`, post: (c.text || '').slice(0, 80), pic: c.text || 'A picture', thought: (c.text || '').slice(0, 80), article: c.title, link: `Shared: ${c.title}`, art: `Drawing of ${c.title}`, press: `${c.outlet}: ${c.title}` }[c.type] || c.title || '');
 
   /* ------------------------------------------------------------------ the masthead */
   const name = $('#bigname'), parts = S.name.split(' ');
@@ -178,7 +181,7 @@
     const cx = L.right / 2 - L.cw / 2, cy = (L.top + L.bottom) / 2 - L.ch / 2;
     const dx = Math.min(w * 1.14, (L.right - w) / 2 - 8), dy = Math.min(h * 1.05, (L.bottom - L.top - h) / 2);
     // work in the middle, a drawing above, an image and words either side, and any deck below
-    const spread = [['work', 0, 0], ['drawings', 0, -dy], ['images', -dx, 0], ['words', dx, 0], [pick(['work', 'images', 'words', 'drawings']), 0, dy]];
+    const spread = [['work', 0, 0], ['drawings', 0, -dy], ['images', -dx, 0], ['words', dx, 0], [pick(['work', 'images', 'words', 'drawings', 'press']), 0, dy]];
     const used = new Set();
     spread.forEach(([key, ox, oy], n) => {
       const d = DECK[key];
@@ -308,6 +311,7 @@
     if (c.type === 'article') return `<p class="meta">${esc(c.outlet)} · ${esc(when(c.date))}</p><h2 class="serif">${esc(c.title)}</h2>${c.dek ? `<p class="words">${esc(c.dek)}</p>` : ''}
         <p class="links">${c.slug ? `<a class="go solid" href="read.html?c=${esc(c.slug)}">Read it</a>` : ''}${out(c.url, 'Original')}</p>`;
     if (c.type === 'link') return `<p class="meta">Shared · ${esc(c.site || '')} · ${esc(when(c.date))}</p><h2 class="serif">${esc(c.title)}</h2>${c.img ? `<figure><img src="${esc(c.img)}" alt=""></figure>` : ''}${c.text ? `<p class="say small">${esc(c.text)}</p>` : ''}<p class="links">${out(c.url, 'Read it')}</p>`;
+    if (c.type === 'press') return `<p class="meta">${esc(c.outlet)} · ${esc(c.date)}</p><h2 class="serif">${esc(c.title)}</h2><p class="links">${out(c.url, 'Read it')}</p>`;
     if (c.type === 'art') return `<figure class="drawn"><img src="${esc(c.img)}" alt="Summer’s drawing of ${esc(c.title)}"></figure><p class="meta">${esc(c.title)}, ${esc(c.date)}</p><p class="links">${out(S.hof.url, 'Every Hall of Famer')}</p>`;
     if (c.type === 'playlist') return `<div class="pl"><img src="${esc(c.img)}" alt="Cover of ${esc(c.title)}"><div><p class="meta">Playlist · ${esc(c.date)}</p><h2>${esc(c.title)}</h2>${c.text ? `<p class="words">${esc(c.text)}</p>` : ''}</div></div>
         ${c.spotify ? `<iframe class="spotify" title="${esc(c.title)} on Spotify" src="https://open.spotify.com/embed/playlist/${esc(c.spotify)}?utm_source=generator" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>` : ''}`;
@@ -320,12 +324,12 @@
     big.innerHTML = `<article class="bigcard cv">
       <button class="close" type="button" aria-label="Close">Close</button>
       <div class="big-in"><div class="bb-back">
-        <div class="bb-head"><h2>${esc(S.name)}</h2><span class="bb-pos">${esc(C.position)}</span></div>
-        <div class="bb-vitals">${C.vitals.map(([k, v]) => `<span><b>${esc(k)}:</b> ${esc(v)}</span>`).join('')}</div>
-        <table class="bb-table"><thead><tr><th>Year</th><th>Club</th><th>Position</th></tr></thead>
-          <tbody>${C.rows.slice().reverse().map(r => `<tr>${r.map(x => `<td>${esc(x)}</td>`).join('')}</tr>`).join('')}</tbody></table>
-        <div class="bb-totals">${C.totals.map(([k, v]) => `<div><small>${esc(k)}</small><b>${esc(v)}</b></div>`).join('')}</div>
+        <div class="bb-head"><h2>${esc(S.name)}</h2><span class="bb-pos">${esc(C.position)} · ${esc(C.home || S.city)}</span></div>
+        ${C.intro ? `<p class="bb-intro">${esc(C.intro)}</p>` : ''}
+        <ol class="bb-rows">${C.rows.slice().reverse().map(([yr, club, pos, words]) => `<li><span class="yr">${esc(yr)}</span><div><b>${esc(club)}</b><span class="pos">${esc(pos)}</span>${words ? `<p>${esc(words)}</p>` : ''}</div></li>`).join('')}</ol>
         ${C.fact ? `<p class="bb-fact">${esc(C.fact)}</p>` : ''}
+        ${C.quote ? `<p class="bb-quote">${esc(C.quote)}</p>` : ''}
+        ${(S.press || []).length ? `<h3 class="bb-sub">Press</h3><ul class="bb-press">${S.press.map(x => `<li><a href="${esc(x.url)}" target="_blank" rel="noopener"><span>${esc(x.outlet)}, ${esc(x.year)}</span>${esc(x.title)} ↗</a></li>`).join('')}</ul>` : ''}
       </div>
       <p class="links center"><a class="go solid" href="mailto:${esc(S.email)}">Email</a>${S.resume ? `<a class="go" href="${esc(S.resume)}">Résumé (PDF)</a>` : ''}${S.links.filter(l => l.label !== 'Every Hall of Famer').map(l => out(l.url, l.label)).join('')}</p></div>
     </article>`;
@@ -342,7 +346,7 @@
   const R = window.SAB_RADIO || {}, radioBtn = $('#radio'), player = $('#player');
   let ctrl = null, last = { position: 0, duration: 0 }, wantPlay = false;
   const randomTrack = () => (R.tracks && R.tracks.length ? `spotify:track:${pick(R.tracks)}` : `spotify:playlist:${R.playlist}`);
-  function nextTrack() { if (!ctrl) return; ctrl.loadUri(randomTrack()); ctrl.play(); }
+  let nextTrack = () => { if (!ctrl) return; ctrl.loadUri(randomTrack()); ctrl.play(); };
   function radioOn(on) {
     wantPlay = on;
     radioBtn.setAttribute('aria-pressed', String(on));
@@ -365,12 +369,24 @@
     const s = document.createElement('script');
     s.src = 'https://open.spotify.com/embed/iframe-api/v1';
     s.async = true;
+    s.onerror = plain;
     document.body.appendChild(s);
+    setTimeout(() => { if (!ctrl) plain(); }, 6000);
+  }
+  // Without Spotify's player API: a plain embed of a random track, and Shuffle loads another.
+  let usingPlain = false;
+  function plain() {
+    if (ctrl || usingPlain) return;
+    usingPlain = true;
+    const embed = () => { const t = R.tracks && R.tracks.length ? `track/${pick(R.tracks)}` : `playlist/${R.playlist}`; $('#spot').outerHTML = `<iframe id="spot" title="Radio" src="https://open.spotify.com/embed/${t}?utm_source=generator" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>`; };
+    embed();
+    nextTrack = embed;
   }
   if (R.playlist) {
     radioBtn.hidden = false;
     radioBtn.addEventListener('click', () => radioOn(radioBtn.getAttribute('aria-pressed') !== 'true'));
-    $('#shuffle').addEventListener('click', nextTrack);
+    $('#shuffle').addEventListener('click', () => nextTrack());
+    $('#spot-out').href = R.url || `https://open.spotify.com/playlist/${R.playlist}`;
   }
 
   /* ------------------------------------------------------------------ deal */
@@ -380,7 +396,7 @@
     layout();
     counts();
     // the opening hand: the newest card from each deck, then one more piece of work and one more of words
-    ['work', 'images', 'words', 'drawings', 'work', 'words'].filter(k => DECK[k].cards.length)
+    ['work', 'images', 'words', 'drawings', 'press', 'work', 'words'].filter(k => DECK[k].cards.length)
       .forEach((k, n) => setTimeout(() => deal(k), reduced ? 0 : 250 + n * 170));
     route();
   }
