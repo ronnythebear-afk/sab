@@ -160,7 +160,7 @@ dialog::backdrop { background: rgba(241, 238, 231, .82); -webkit-backdrop-filter
 .bigcard { position: relative; display: flex; flex-direction: column; max-height: calc(100dvh - 24px); background: var(--paper-3); border: 1px solid var(--ink); box-shadow: 0 40px 80px -40px rgba(18, 18, 18, .5); font-family: var(--f-ui); animation: lift .5s cubic-bezier(.16, 1, .3, 1); }
 @keyframes lift { from { transform: translateY(24px); opacity: 0; } }
 .big-in { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 26px clamp(22px, 4.4vw, 44px) 30px; }
-.bigcard .close { position: absolute; top: 16px; right: 18px; z-index: 2; padding: 6px 0; border: 0; background: none; font: 500 11px/1 var(--f-mono); text-transform: uppercase; letter-spacing: .12em; }
+.bigcard .close { position: absolute; top: 16px; right: 10px; z-index: 2; padding: 6px 8px; border: 0; background: var(--card); font: 500 11px/1 var(--f-mono); text-transform: uppercase; letter-spacing: .12em; }
 .bigcard .close:hover { color: var(--red); }
 .bigcard .meta { margin: 0 70px 16px 0; padding-bottom: 10px; border-bottom: 1px solid var(--ink); font: 500 11px/1.4 var(--f-mono); text-transform: uppercase; letter-spacing: .12em; color: var(--ink); }
 .bigcard h2 { margin: 0 0 22px; font: 400 clamp(44px, 7vw, 82px)/.9 var(--f-serif); letter-spacing: -.035em; }
@@ -235,26 +235,18 @@ dialog::backdrop { background: rgba(241, 238, 231, .82); -webkit-backdrop-filter
 .noimg .ttl.big { flex: none; font-size: 19cqw; line-height: .86; -webkit-line-clamp: 5; }
 .noimg .front { background: var(--card) linear-gradient(var(--red), var(--red)) 6cqw 17cqw / 10cqw 1.2cqw no-repeat; }
 
-/* press cards: the outlet, set like a masthead, over the headline */
-.t-press .front { background: var(--card); }
-.card .outlet { padding-bottom: 2cqw; border-bottom: 3px double var(--ink); font: 400 9cqw/1 var(--f-serif); font-style: italic; letter-spacing: -.01em; }
-.t-press .ttl { flex: 1; font-size: 11.5cqw; -webkit-line-clamp: 7; }
-
-/* the CV: in her words, with the press at the end */
-.bb-intro { margin: 18px 0 8px; font: italic 400 clamp(22px, 3vw, 28px)/1.22 var(--f-serif); letter-spacing: -.01em; }
-.bb-rows { list-style: none; margin: 18px 0 0; padding: 0; border-top: 1px solid var(--ink); }
-.bb-rows li { display: grid; grid-template-columns: 74px 1fr; gap: 14px; padding: 13px 0; border-bottom: 1px solid var(--hair); }
+/* the CV: years, places and titles, then the press */
+.bb-rows { list-style: none; margin: 16px 0 0; padding: 0; }
+.bb-rows li { display: grid; grid-template-columns: 74px 1fr; gap: 14px; padding: 5px 0; align-items: baseline; }
 .bb-rows .yr { font: 500 11px/1.9 var(--f-mono); letter-spacing: .06em; color: var(--ink-2); }
-.bb-rows b { display: block; font: 400 25px/1.05 var(--f-serif); letter-spacing: -.015em; }
-.bb-rows .pos { display: block; margin-top: 4px; font: 500 10.5px/1.4 var(--f-mono); text-transform: uppercase; letter-spacing: .1em; color: var(--ink-2); }
-.bb-rows p { margin: 8px 0 0; max-width: 34em; font: 400 15px/1.5 var(--f-ui); }
-.bb-quote { margin: 14px 0 0; font: italic 400 20px/1.3 var(--f-serif); color: var(--ink-2); }
-.bb-sub { margin: 26px 0 0; padding-bottom: 8px; border-bottom: 1px solid var(--ink); font: 500 11px/1 var(--f-mono); text-transform: uppercase; letter-spacing: .12em; }
+.bb-rows b { font: 400 23px/1.15 var(--f-serif); letter-spacing: -.015em; margin-right: 10px; }
+.bb-rows .pos { font: 500 10.5px/1.4 var(--f-mono); text-transform: uppercase; letter-spacing: .1em; color: var(--ink-2); white-space: nowrap; }
+.bb-sub { margin: 28px 0 6px; font: 500 11px/1 var(--f-mono); text-transform: uppercase; letter-spacing: .12em; color: var(--red); }
 .bb-press { list-style: none; margin: 0; padding: 0; }
-.bb-press li { border-bottom: 1px solid var(--hair); }
-.bb-press a { display: block; padding: 11px 0; font: 400 19px/1.2 var(--f-serif); text-decoration: none; }
+.bb-press a { display: grid; grid-template-columns: 74px 1fr; gap: 14px; align-items: baseline; padding: 5px 0; font: 400 18px/1.2 var(--f-serif); text-decoration: none; }
 .bb-press a:hover { color: var(--red); }
-.bb-press span { display: block; margin-bottom: 3px; font: 500 10.5px/1.3 var(--f-mono); text-transform: uppercase; letter-spacing: .1em; color: var(--ink-2); }
+.bb-press span:first-child { font: 500 11px/1.9 var(--f-mono); letter-spacing: .06em; color: var(--ink-2); }
+.bb-press i { margin-left: 4px; font: normal 500 10.5px/1.4 var(--f-mono); text-transform: uppercase; letter-spacing: .1em; color: var(--ink-2); white-space: nowrap; }
 
 /* the radio's controls */
 .player-row { display: flex; gap: 8px; margin: 8px 0 0; }
@@ -262,7 +254,6 @@ dialog::backdrop { background: rgba(241, 238, 231, .82); -webkit-backdrop-filter
 .spot-out { display: grid; place-items: center; padding: 0 12px; border: 1px solid var(--ink); font: 500 11px/1 var(--f-mono); text-transform: uppercase; letter-spacing: .1em; text-decoration: none; white-space: nowrap; }
 .spot-out:hover { background: var(--ink); color: var(--paper); }
 @media (max-width: 759px) {
-  .deck { width: 20%; }
-  .dname { font-size: 13px; }
-  .bb-rows li { grid-template-columns: 1fr; gap: 4px; }
+  .bb-rows li, .bb-press a { grid-template-columns: 1fr; gap: 0; padding: 6px 0; }
+  .bb-rows .pos { display: block; white-space: normal; }
 }

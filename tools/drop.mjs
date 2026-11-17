@@ -4,7 +4,7 @@
 //
 // drop.txt holds anything, with a blank line between things:
 //   a link to a post on X          becomes a Words card with the post's words and date
-//   a link to an Instagram post    becomes an Images card that opens the post
+//   a link to an Instagram post    becomes a And more card that opens the post
 //   a link to an article            becomes a Words card. If Summer wrote it, the site keeps
 //                                   a clean copy to read here; if not, it's a Shared card.
 //   any other link                 becomes a Shared card with the page's title and picture

@@ -257,47 +257,38 @@ window.SAB = {
   "card": {
     "position": "Creative director",
     "home": "Austin, Tex.",
-    "intro": "I like liking things. I like a lot of things, but I especially like animals, sad songs, breakfast tacos, seeing movies in the theater, the Houston Astros, first kisses, biscuits, and the sweet + soft parts of life.",
     "rows": [
       [
         "1999",
         "Girl Games",
-        "Web editor",
-        ""
+        "Web editor"
       ],
       [
         "2003–11",
         "BookPeople",
-        "Barista to buyer",
-        ""
+        "Barista to buyer"
       ],
       [
         "2010–",
         "Freelance and Every Hall of Famer",
-        "Illustrator, writer",
-        "Drawing every single member of the National Baseball Hall of Fame."
+        "Illustrator, writer"
       ],
       [
         "2012–19",
         "BuzzFeed",
-        "Weekend editor to Head of BuzzFeed Originals",
-        "Seven years with twice as many titles. Along the way I was lucky enough to meet Hanson, Pedro Pascal, Madonna, Issa Rae, Andrew Keegan, and Grumpy Cat."
+        "Weekend editor to Head of BuzzFeed Originals"
       ],
       [
         "2019–21",
         "Tenderly",
-        "Founder, editor in chief",
-        "I commissioned and edited over 1000 pieces in less than two years."
+        "Founder, editor in chief"
       ],
       [
         "2022–",
         "Praytell",
-        "Creative director",
-        "Clairol, La Marca Prosecco, Air New Zealand, If You Care, Prime Video"
+        "Creative director"
       ]
-    ],
-    "fact": "I have also been a waitress, toy store clerk, a hair salon receptionist, a writer at a now defunct website for tweens (when I was 16!), and a stablehand (my first job).",
-    "quote": "A colleague once described me as \"terrifyingly kind,\" and I take that as an enormous compliment."
+    ]
   },
   "hof": {
     "url": "https://everyhalloffamer.tumblr.com",
@@ -457,28 +448,28 @@ window.SAB = {
       "url": "https://www.espn.com/espn/page2/story?page=lukas%2F110519_every_hall_of_famer&sportCat=mlb"
     },
     {
-      "outlet": "Deadspin",
-      "year": "2011",
-      "title": "One artist’s effort to draw all 295 members of the Baseball Hall of Fame",
-      "url": "http://deadspin.com/5844927/a-sampling-from-one-artists-effort-to-draw-all-295-members-of-the-baseball-hall-of-fame/gallery/"
-    },
-    {
       "outlet": "Texas Monthly",
       "year": "2014",
       "title": "101 Sure Signs That Summer Anne Burton Is From Texas",
       "url": "https://www.texasmonthly.com/arts-entertainment/101-sure-signs-that-summer-anne-burton-is-from-texas/"
     },
     {
-      "outlet": "The Hairpin",
-      "year": "2014",
-      "title": "Internet Work and Invisible Labor: An Interview With Summer Anne Burton",
-      "url": "https://web.archive.org/web/2014/https://www.thehairpin.com/2014/01/internet-work-and-invisible-labor-an-interview-with-summer-anne-burton/"
-    },
-    {
       "outlet": "Adweek",
       "year": "2016",
       "title": "BuzzFeed Names Its First Executive Creative Producer",
       "url": "https://www.adweek.com/brand-marketing/omg-buzzfeed-names-its-first-creative-executive-producer-169881/"
+    },
+    {
+      "outlet": "Texas Monthly",
+      "year": "2017",
+      "title": "Why BuzzFeed Is Opening Its First Texas Office",
+      "url": "https://www.texasmonthly.com/the-daily-post/why-buzzfeed-is-opening-its-first-texas-office/"
+    },
+    {
+      "outlet": "Austin Chronicle",
+      "year": "2019",
+      "title": "Vegan Magazine Founder Summer Burton Talks Reason and Queso",
+      "url": "https://www.austinchronicle.com/food/vegan-magazine-founder-summer-burton-talks-reason-and-queso-11675325/"
     }
   ]
 };
