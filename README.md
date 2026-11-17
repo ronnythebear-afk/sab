@@ -1,6 +1,6 @@
 # summeranneburton.com
 
-Summer's website is a card table. Everything is a card, in four decks along the bottom, newest on top:
+Summer's website is a card table on a dark stage, under a light that follows the cursor. Her name is set huge behind the table and lights up where the light passes. Cards lean toward the cursor and their foil catches the light, and a small tag by the cursor says what a click will do. Everything is a card, in four decks along the bottom, newest on top:
 
 - **Work**: the work, Praytell and before
 - **Images**: pictures, and Instagram posts

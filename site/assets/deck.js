@@ -67,13 +67,15 @@
     else if (c.type === 'link') h = `<span class="kicker"><i class="tag">Shared</i> ${esc(c.site || '')}</span>${c.img ? `<span class="ph wide"><img src="${esc(c.img)}" alt="" draggable="false"></span>` : ''}<span class="hl">${esc(c.title)}</span>${c.text ? `<span class="note">${esc(c.text)}</span>` : ''}`;
     else if (c.type === 'art') h = `<span class="ph drawn"><img src="${esc(c.img)}" alt="" draggable="false"></span><span class="lbl"><b>${esc(c.title)}</b><small>${esc(c.date)}</small></span>`;
     else if (c.type === 'playlist') h = `<span class="ph sq"><img src="${esc(c.img)}" alt="" draggable="false"></span><span class="lbl"><b>${esc(c.title)}</b><small>${esc(c.date)}</small></span>`;
-    return `<span class="face front"><i class="pip">${s.pip}</i><span class="in">${h}</span></span>`;
+    return `<span class="face front"><i class="pip">${s.pip}</i><span class="in">${h}</span><i class="holo"></i></span>`;
   }
-  const back = c => `<span class="face back"><b>${SUIT[c.suit].pip}</b></span>`;
+  const back = c => `<span class="face back"><i class="rings"></i><b>${SUIT[c.suit].pip}</b><i class="holo"></i></span>`;
   const label = c => ({ work: `${c.title}, ${c.sub}`, post: (c.text || '').slice(0, 80), pic: c.text || 'A picture', thought: (c.text || '').slice(0, 80), article: c.title, link: `Shared: ${c.title}`, art: `Drawing of ${c.title}`, playlist: `Playlist: ${c.title}` }[c.type] || c.title || '');
 
   /* ------------------------------------------------------------------ the top */
-  $('#name').textContent = S.name;
+  // The name, huge, behind the table. The light picks it out wherever it passes.
+  const parts = S.name.split(' ');
+  $('#bigname').innerHTML = `<span>${esc(parts.slice(0, -1).join(' '))}</span> <em>${esc(parts.slice(-1)[0])}</em>`;
   $('#role').textContent = `${S.role} · ${S.city}`;
   $('#mail').href = `mailto:${S.email}`;
   if (S.available) { $('#avail').textContent = S.available; $('#avail').hidden = false; }
@@ -128,7 +130,7 @@
     el.type = 'button';
     el.className = `card t-${c.type} s-${c.suit}${c.type === 'work' && !c.img ? ' noimg' : ''}${opts.down ? ' down' : ''}`;
     el.setAttribute('aria-label', opts.down ? `${SUIT[c.suit].name}, face down: turn it over` : label(c));
-    el.innerHTML = `<span class="flip">${front(c)}${back(c)}</span>`;
+    el.innerHTML = `<span class="tilt"><span class="flip">${front(c)}${back(c)}</span></span>`;
     el.style.zIndex = ++z;
     table.appendChild(el);
     const to = opts.at || spot();
@@ -179,9 +181,48 @@
     });
   }
   function turnOver(t) {
+    if (tagEl.classList.contains("on")) tagEl.textContent = "Open";
     t.el.classList.remove('down');
     t.el.setAttribute('aria-label', label(t.c));
   }
+
+  /* the light, the tilt and the cursor tag */
+  // The light follows the pointer. A card under it leans toward the pointer and its foil
+  // catches the light. A small tag by the pointer says what a click will do.
+  const root = document.documentElement, tagEl = $('#tag'), fine = matchMedia('(pointer: fine)').matches;
+  let lit = null, frame = 0, pointer = { x: innerWidth * .3, y: innerHeight * .32 };
+  function shine() {
+    frame = 0;
+    root.style.setProperty('--lx', pointer.x + 'px');
+    root.style.setProperty('--ly', pointer.y + 'px');
+    if (fine) tagEl.style.transform = `translate(${pointer.x + 16}px, ${pointer.y + 18}px)`;
+  }
+  function lean(el, x, y) {
+    if (lit && lit !== el) { lit.classList.remove('lit'); lit.style.removeProperty('--rx'); lit.style.removeProperty('--ry'); }
+    lit = el;
+    if (!el || reduced) return;
+    const r = el.getBoundingClientRect(), px = clamp((x - r.left) / r.width, 0, 1), py = clamp((y - r.top) / r.height, 0, 1);
+    el.classList.add('lit');
+    el.style.setProperty('--rx', ((.5 - py) * 16).toFixed(2) + 'deg');
+    el.style.setProperty('--ry', ((px - .5) * 18).toFixed(2) + 'deg');
+    el.style.setProperty('--hx', (px * 100).toFixed(1) + '%');
+    el.style.setProperty('--hy', (py * 100).toFixed(1) + '%');
+  }
+  function say(target) {
+    if (!fine) return;
+    const card = target.closest && target.closest('.card'), deck = target.closest && target.closest('.deck');
+    const words = held ? 'Throw' : card ? (card.classList.contains('down') ? 'Turn over' : 'Open') : deck ? 'Deal' : '';
+    tagEl.textContent = words;
+    tagEl.classList.toggle('on', !!words);
+  }
+  addEventListener('pointermove', e => {
+    pointer = { x: e.clientX, y: e.clientY };
+    if (!frame) frame = requestAnimationFrame(shine);
+    if (!held) lean(e.target.closest && e.target.closest('.card'), e.clientX, e.clientY);
+    say(e.target);
+  }, { passive: true });
+  document.addEventListener('pointerleave', () => { lean(null); tagEl.classList.remove('on'); });
+  shine();
 
   /* picking up, moving and flicking */
   let held = null;

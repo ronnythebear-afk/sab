@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Summer Anne Burton</title>
 <meta name="description" content="Summer Anne Burton is a creative director in Austin, Texas.">
-<meta name="theme-color" content="#f5f3ef">
-<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#0b0b0e">
+<meta name="color-scheme" content="dark">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Summer Anne Burton">
 <meta property="og:description" content="Creative director, Austin.">
@@ -16,22 +16,23 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300..800&family=Geist+Mono:wght@400..600&display=swap">
 <link rel="stylesheet" href="assets/site.css">
 </head>
 <body class="table">
 <!--
-  A card table. Everything is a card in one of four decks: Work, Images, Words and Baseball
-  drawings, newest on top. Tap a deck to deal its next card. Cards can be moved and flicked
-  around, and tapping one opens it. Pull a reading lays out five cards face down. Radio
-  shuffles a Spotify playlist.
+  A card table on a dark stage, under a light that follows the cursor. Everything is a card in
+  one of four decks: Work, Images, Words and Baseball drawings, newest on top. Tap a deck to
+  deal its next card. Cards tilt toward the cursor, can be moved and flicked around, and open
+  when tapped. Pull a reading lays out five cards face down. Radio shuffles a Spotify playlist.
 -->
+<div class="stage" aria-hidden="true"><div class="light"></div></div>
+<h1 class="bigname" id="bigname"></h1>
+<div class="grain" aria-hidden="true"></div>
+
 <header class="top">
   <button class="me" id="me" type="button" aria-label="Photo booth: take a new picture"><img id="me-img" alt="" src=""></button>
-  <div class="who">
-    <h1 class="name" id="name"></h1>
-    <p class="role" id="role"></p>
-  </div>
+  <p class="role" id="role"></p>
   <nav class="hud" aria-label="Get in touch">
     <span class="avail" id="avail" hidden></span><button class="radio" id="radio" type="button" aria-pressed="false" hidden><i class="eq" aria-hidden="true"><b></b><b></b><b></b></i>Radio</button><a href="#cv" id="cv-link">CV</a><a id="mail" class="mail">Email</a>
   </nav>
@@ -47,6 +48,7 @@
 
 <dialog class="big" id="big" aria-label="A card, up close"></dialog>
 <div class="flash" id="flash" aria-hidden="true"></div>
+<div class="tag" id="tag" aria-hidden="true"></div>
 
 <script src="content/content.js"></script>
 <script src="content/feed.js"></script>
