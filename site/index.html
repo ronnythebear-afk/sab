@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Summer Anne Burton</title>
 <meta name="description" content="Summer Anne Burton is a creative director in Austin, Texas.">
-<meta name="theme-color" content="#0b0b0e">
-<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#f1eee7">
+<meta name="color-scheme" content="light">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Summer Anne Burton">
 <meta property="og:description" content="Creative director, Austin.">
@@ -21,31 +21,30 @@
 </head>
 <body class="table">
 <!--
-  A card table on a dark stage, under a light that follows the cursor. Everything is a card in
-  one of four decks: Work, Images, Words and Baseball drawings, newest on top. Tap a deck to
-  deal its next card. Cards tilt toward the cursor, can be moved and flicked around, and open
-  when tapped. Pull a reading lays out five cards face down. Radio shuffles a Spotify playlist.
+  A page with cards on it. Everything is a card in one of four decks: I Work, II Images,
+  III Words and IV Baseball drawings, newest on top. Tap a deck to deal its next card. Cards
+  can be moved and flicked around, and open when tapped. Pull a reading lays out five cards
+  face down. Radio shuffles a Spotify playlist.
 -->
-<div class="stage" aria-hidden="true"><div class="light"></div></div>
-<h1 class="bigname" id="bigname"></h1>
-<div class="grain" aria-hidden="true"></div>
-
 <header class="top">
   <button class="me" id="me" type="button" aria-label="Photo booth: take a new picture"><img id="me-img" alt="" src=""></button>
   <p class="role" id="role"></p>
+  <p class="dateline" id="dateline"></p>
   <nav class="hud" aria-label="Get in touch">
     <span class="avail" id="avail" hidden></span><button class="radio" id="radio" type="button" aria-pressed="false" hidden><i class="eq" aria-hidden="true"><b></b><b></b><b></b></i>Radio</button><a href="#cv" id="cv-link">CV</a><a id="mail" class="mail">Email</a>
   </nav>
 </header>
 <div class="player" id="player" hidden><div id="spot"></div><button class="shuffle" id="shuffle" type="button">Shuffle</button></div>
 
-<main class="cards" id="cards" aria-label="Cards on the table"></main>
+<h1 class="bigname" id="bigname"></h1>
+<main class="cards" id="cards" aria-label="Cards on the page"></main>
 
-<div class="dock">
-  <button class="reading" id="reading" type="button">Pull a reading</button>
+<aside class="dock">
   <nav class="decks" id="decks" aria-label="Decks"></nav>
-</div>
+  <button class="reading" id="reading" type="button">Pull a reading</button>
+</aside>
 
+<div class="grain" aria-hidden="true"></div>
 <dialog class="big" id="big" aria-label="A card, up close"></dialog>
 <div class="flash" id="flash" aria-hidden="true"></div>
 <div class="tag" id="tag" aria-hidden="true"></div>

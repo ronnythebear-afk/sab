@@ -1,16 +1,16 @@
 /*
-  Summer Anne Burton's site: a card table.
+  Summer Anne Burton's site: a page with cards on it.
 
-  Everything is a card, in five decks along the bottom, newest on top:
-    Work               the work, from content.js
-    Images             pictures, and Instagram posts
-    Words              articles (hers and ones she's sharing), posts from X, thoughts
-    Baseball drawings  Every Hall of Famer
-    Playlists          playlists
+  Everything is a card, in four decks, newest on top:
+    I    Work               the work, from content.js
+    II   Images             pictures, and Instagram posts
+    III  Words              articles (hers and ones she's sharing), posts from X, thoughts
+    IV   Baseball drawings  Every Hall of Famer
   Tap a deck to deal its next card. Drag a card to move it, flick it and it slides. Tap a
   card to open it, with arrows through the rest of its deck. When the page opens, the newest
-  card from each deck is dealt. Pull a reading clears the table and lays out five cards face
-  down in a cross, one from each deck: tap one to turn it over, tap again to open it.
+  card from each deck is dealt. Pull a reading clears the page and lays out five cards face
+  down in a cross: tap one to turn it over, tap again to open it. A small tag by the pointer
+  says what a click will do.
 */
 (function () {
   const S = window.SAB, FEED = window.SAB_FEED || [], FACES = window.SAB_FACES || [];
@@ -30,10 +30,10 @@
 
   /* ------------------------------------------------------------------ the decks */
   const SUITS = [
-    { key: 'work', name: 'Work', pip: '★' },
-    { key: 'images', name: 'Images', pip: '●' },
-    { key: 'words', name: 'Words', pip: '■' },
-    { key: 'drawings', name: 'Baseball drawings', pip: '◆' }
+    { key: 'work', num: 'I', name: 'Work' },
+    { key: 'images', num: 'II', name: 'Images' },
+    { key: 'words', num: 'III', name: 'Words' },
+    { key: 'drawings', num: 'IV', name: 'Baseball drawings' }
   ];
   const SUIT = Object.fromEntries(SUITS.map(s => [s.key, s]));
   const suitOf = c => c.type === 'work' ? 'work' : c.type === 'art' ? 'drawings'
@@ -53,30 +53,31 @@
   });
 
   /* ------------------------------------------------------------------ the faces */
+  // Every card has the same caption line across the top: its number, its deck, its date.
   function front(c) {
     const s = SUIT[c.suit];
+    const head = `<span class="hdr"><b>${s.num}</b><span>${esc(s.name)}</span><i>${esc(c.type === 'work' || c.type === 'art' ? c.date : when(c.date))}</i></span>`;
     let h = '';
     if (c.type === 'work') h = c.img
-      ? `<span class="ph"><img src="${esc(c.img)}" alt="" draggable="false"></span><span class="lbl"><b>${esc(c.title)}</b><small>${esc(c.sub)} · ${esc(c.date)}</small></span>`
-      : `<span class="slab"><b>${esc(c.title)}</b></span><span class="lbl"><small>${esc(c.sub)} · ${esc(c.date)}</small></span>`;
-    else if (c.type === 'pic') h = `<span class="ph full"><img src="${esc(c.img)}" alt="" draggable="false"></span>${c.text ? `<span class="cap">${esc(c.text)}</span>` : ''}<span class="dt">${esc(when(c.date))}</span>`;
-    else if (c.type === 'post' && c.source === 'Instagram') h = `<span class="kicker">Instagram</span><span class="txt">${esc(c.text || '')}</span><span class="dt">${esc(when(c.date))}</span>`;
-    else if (c.type === 'post') h = `<span class="kicker">@summeranne on X</span><span class="txt">${esc(c.text || '')}</span><span class="dt">${esc(when(c.date))}</span>`;
-    else if (c.type === 'thought') h = `<span class="txt big">${esc(c.text)}</span><span class="dt">${esc(when(c.date))}</span>`;
-    else if (c.type === 'article') h = `<span class="kicker">${esc(c.outlet)} · ${esc(String(c.date || '').slice(0, 4))}</span><span class="hl">${esc(c.title)}</span><span class="dt">By Summer Anne Burton</span>`;
-    else if (c.type === 'link') h = `<span class="kicker"><i class="tag">Shared</i> ${esc(c.site || '')}</span>${c.img ? `<span class="ph wide"><img src="${esc(c.img)}" alt="" draggable="false"></span>` : ''}<span class="hl">${esc(c.title)}</span>${c.text ? `<span class="note">${esc(c.text)}</span>` : ''}`;
-    else if (c.type === 'art') h = `<span class="ph drawn"><img src="${esc(c.img)}" alt="" draggable="false"></span><span class="lbl"><b>${esc(c.title)}</b><small>${esc(c.date)}</small></span>`;
-    else if (c.type === 'playlist') h = `<span class="ph sq"><img src="${esc(c.img)}" alt="" draggable="false"></span><span class="lbl"><b>${esc(c.title)}</b><small>${esc(c.date)}</small></span>`;
-    return `<span class="face front"><i class="pip">${s.pip}</i><span class="in">${h}</span><i class="holo"></i></span>`;
+      ? `<span class="ph"><img src="${esc(c.img)}" alt="" draggable="false"></span><span class="ttl">${esc(c.title)}</span><span class="cap">${esc(c.sub)}</span>`
+      : `<span class="ttl big">${esc(c.title)}</span><span class="cap">${esc(c.sub)}</span>`;
+    else if (c.type === 'pic') h = `<span class="ph"><img src="${esc(c.img)}" alt="" draggable="false"></span>${c.text ? `<span class="ttl sm">${esc(c.text)}</span>` : ''}`;
+    else if (c.type === 'post') h = `<span class="txt">${esc(c.text || '')}</span><span class="cap">${c.source === 'Instagram' ? 'Instagram' : '@summeranne on X'}</span>`;
+    else if (c.type === 'thought') h = `<span class="txt big">${esc(c.text)}</span>`;
+    else if (c.type === 'article') h = `<span class="cap">${esc(c.outlet)}</span><span class="ttl">${esc(c.title)}</span><span class="cap end">By Summer Anne Burton</span>`;
+    else if (c.type === 'link') h = `<span class="cap">Shared from ${esc(c.site || '')}</span>${c.img ? `<span class="ph wide"><img src="${esc(c.img)}" alt="" draggable="false"></span>` : ''}<span class="ttl">${esc(c.title)}</span>${c.text ? `<span class="note">${esc(c.text)}</span>` : ''}`;
+    else if (c.type === 'art') h = `<span class="ph drawn"><img src="${esc(c.img)}" alt="" draggable="false"></span><span class="ttl sm">${esc(c.title)}</span>`;
+    return `<span class="face front">${head}<span class="in">${h}</span></span>`;
   }
-  const back = c => `<span class="face back"><i class="rings"></i><b>${SUIT[c.suit].pip}</b><i class="holo"></i></span>`;
-  const label = c => ({ work: `${c.title}, ${c.sub}`, post: (c.text || '').slice(0, 80), pic: c.text || 'A picture', thought: (c.text || '').slice(0, 80), article: c.title, link: `Shared: ${c.title}`, art: `Drawing of ${c.title}`, playlist: `Playlist: ${c.title}` }[c.type] || c.title || '');
+  // The back, like an old tarot deck: crosshatching, and the deck's number in a ring.
+  const back = c => `<span class="face back"><i class="hatch"></i><span class="medal"><b>${SUIT[c.suit].num}</b></span></span>`;
+  const label = c => ({ work: `${c.title}, ${c.sub}`, post: (c.text || '').slice(0, 80), pic: c.text || 'A picture', thought: (c.text || '').slice(0, 80), article: c.title, link: `Shared: ${c.title}`, art: `Drawing of ${c.title}` }[c.type] || c.title || '');
 
-  /* ------------------------------------------------------------------ the top */
-  // The name, huge, behind the table. The light picks it out wherever it passes.
-  const parts = S.name.split(' ');
-  $('#bigname').innerHTML = `<span>${esc(parts.slice(0, -1).join(' '))}</span> <em>${esc(parts.slice(-1)[0])}</em>`;
-  $('#role').textContent = `${S.role} · ${S.city}`;
+  /* ------------------------------------------------------------------ the masthead */
+  const name = $('#bigname'), parts = S.name.split(' ');
+  name.innerHTML = `<span>${esc(parts.slice(0, -1).join(' '))}</span> <span>${esc(parts.slice(-1)[0])}</span>`;
+  $('#role').textContent = `${S.role}, ${S.city}`;
+  $('#dateline').textContent = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Chicago', weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }).format(new Date());
   $('#mail').href = `mailto:${S.email}`;
   if (S.available) { $('#avail').textContent = S.available; $('#avail').hidden = false; }
   // The photo booth: tap the picture and it takes a new one, with a flash.
@@ -90,33 +91,40 @@
     setTimeout(nextMe, reduced ? 0 : 120);
   });
 
-  /* ------------------------------------------------------------------ the table and the decks */
+  /* ------------------------------------------------------------------ the page and the decks */
   const table = $('#cards'), decks = $('#decks');
   decks.innerHTML = SUITS.map(s => `<button class="deck d-${s.key}" type="button" data-suit="${s.key}" aria-label="${s.name}: deal a card">
-      <span class="stack"><i></i><i></i><i class="top"><b>${s.pip}</b></i></span><span class="dname">${s.name}</span><span class="count" id="n-${s.key}"></span></button>`).join('');
-  const counts = () => SUITS.forEach(s => { const d = DECK[s.key]; $('#n-' + s.key).textContent = d.cards.length; });
+      <span class="stack"><i></i><i></i><i class="top"><b>${s.num}</b></i></span>
+      <span class="dl"><b>${s.num}</b><span class="dname">${s.name}</span><span class="count" id="n-${s.key}"></span></span></button>`).join('');
+  const counts = () => SUITS.forEach(s => { $('#n-' + s.key).textContent = DECK[s.key].cards.length; });
 
   let L = {};
   function layout() {
-    const W = innerWidth, H = innerHeight, phone = W < 700;
-    const top = $('.top').getBoundingClientRect().bottom + (phone ? 8 : 14);
-    const bottom = $('.dock').getBoundingClientRect().top - (phone ? 6 : 12);
-    const cw = Math.round(clamp(Math.min(W * (phone ? .32 : .13), (bottom - top) * .52 * 5 / 7), phone ? 108 : 140, 210));
-    L = { W, H, phone, top, bottom, cw, ch: Math.round(cw * 7 / 5), max: phone ? 8 : 12 };
+    const W = innerWidth, H = innerHeight, phone = W < 760;
+    const top = $('.top').getBoundingClientRect().bottom + (phone ? 6 : 10);
+    const dock = $('.dock').getBoundingClientRect();
+    const right = phone ? W : dock.left - 10, bottom = phone ? dock.top - 6 : H - 8;
+    const cw = Math.round(clamp(Math.min(right * (phone ? .33 : .165), (bottom - top) * .52 * 5 / 7), phone ? 108 : 150, 225));
+    L = { W, H, phone, top, bottom, right, cw, ch: Math.round(cw * 7 / 5), max: phone ? 8 : 12 };
     document.documentElement.style.setProperty('--cw', cw + 'px');
-    onTable.forEach(t => { t.x = clamp(t.x, 4, W - L.cw - 4); t.y = clamp(t.y, L.top - L.ch * .2, L.bottom - L.ch * .7); place(t); });
+    // the name is as wide as the page allows: one line on a computer, two on a phone
+    name.style.fontSize = '100px';
+    const widest = Math.max(...$$('span', name).map(s => s.getBoundingClientRect().width));
+    const lineW = phone ? widest : name.scrollWidth;
+    name.style.fontSize = Math.floor(100 * (right - (phone ? 24 : 36)) / Math.max(1, lineW)) + 'px';
+    onTable.forEach(t => { t.x = clamp(t.x, 4, L.right - L.cw - 4); t.y = clamp(t.y, L.top - L.ch * .2, L.bottom - L.ch * .7); place(t); });
   }
 
-  /* ------------------------------------------------------------------ cards on the table */
-  const onTable = []; // { c, el, x, y, a, vx, vy, va }
+  /* ------------------------------------------------------------------ cards on the page */
+  const onTable = []; // { c, el, x, y, a, s, vx, vy, va }
   let z = 10;
   const place = t => { t.el.style.transform = `translate(${t.x.toFixed(1)}px, ${t.y.toFixed(1)}px) rotate(${t.a.toFixed(2)}deg)${t.s && t.s !== 1 ? ` scale(${t.s.toFixed(3)})` : ''}`; };
 
-  // Somewhere on the table that isn't already covered much.
+  // Somewhere on the page that isn't already covered much.
   function spot() {
     let best = null, bestScore = Infinity;
     for (let n = 0; n < 16; n++) {
-      const x = rand(8, L.W - L.cw - 8), y = rand(L.top, Math.max(L.top + 1, L.bottom - L.ch));
+      const x = rand(10, L.right - L.cw - 10), y = rand(L.top, Math.max(L.top + 1, L.bottom - L.ch));
       const score = onTable.reduce((s, t) => s + Math.max(0, L.cw - Math.abs(t.x - x)) * Math.max(0, L.ch - Math.abs(t.y - y)), 0);
       if (score < bestScore) { best = { x, y }; bestScore = score; }
     }
@@ -130,18 +138,18 @@
     el.type = 'button';
     el.className = `card t-${c.type} s-${c.suit}${c.type === 'work' && !c.img ? ' noimg' : ''}${opts.down ? ' down' : ''}`;
     el.setAttribute('aria-label', opts.down ? `${SUIT[c.suit].name}, face down: turn it over` : label(c));
-    el.innerHTML = `<span class="tilt"><span class="flip">${front(c)}${back(c)}</span></span>`;
+    el.innerHTML = `<span class="flip">${front(c)}${back(c)}</span>`;
     el.style.zIndex = ++z;
     table.appendChild(el);
     const to = opts.at || spot();
-    const t = { c, el, x: to.x, y: to.y, a: opts.a != null ? opts.a : rand(-10, 10), s: opts.s || 1, vx: 0, vy: 0, va: 0 };
+    const t = { c, el, x: to.x, y: to.y, a: opts.a != null ? opts.a : rand(-7, 7), s: opts.s || 1, vx: 0, vy: 0, va: 0 };
     onTable.push(t);
     const from = $(`.d-${c.suit} .top`).getBoundingClientRect();
     place(t);
     if (!reduced) el.animate([
       { transform: `translate(${from.left}px, ${from.top}px) rotate(0deg) scale(${from.width / L.cw})` },
       { transform: el.style.transform }
-    ], { duration: 520, delay: opts.delay || 0, fill: 'backwards', easing: 'cubic-bezier(.2, .8, .25, 1)' });
+    ], { duration: 560, delay: opts.delay || 0, fill: 'backwards', easing: 'cubic-bezier(.16, 1, .3, 1)' });
     // too many out: the one at the bottom of the pile goes back
     if (onTable.length > L.max) sendBack(onTable.reduce((a, b) => (+a.el.style.zIndex < +b.el.style.zIndex ? a : b)));
     return t;
@@ -162,13 +170,13 @@
     ], { duration: 420, easing: 'cubic-bezier(.5, 0, .7, .4)' }).onfinish = () => t.el.remove();
   }
 
-  // A reading: the table clears and five cards land face down in a cross, one from each deck.
+  // A reading: the page clears and five cards land face down in a cross.
   function reading() {
     [...onTable].forEach(sendBack);
-    // the cards shrink if the table is too short for a cross of them
+    // the cards shrink if the page is too short for a cross of them
     const s = Math.min(1, (L.bottom - L.top) / (L.ch * 3.15)), w = L.cw * s, h = L.ch * s;
-    const cx = L.W / 2 - L.cw / 2, cy = (L.top + L.bottom) / 2 - L.ch / 2;
-    const dx = Math.min(w * 1.14, (L.W - w) / 2 - 8), dy = Math.min(h * 1.05, (L.bottom - L.top - h) / 2);
+    const cx = L.right / 2 - L.cw / 2, cy = (L.top + L.bottom) / 2 - L.ch / 2;
+    const dx = Math.min(w * 1.14, (L.right - w) / 2 - 8), dy = Math.min(h * 1.05, (L.bottom - L.top - h) / 2);
     // work in the middle, a drawing above, an image and words either side, and any deck below
     const spread = [['work', 0, 0], ['drawings', 0, -dy], ['images', -dx, 0], ['words', dx, 0], [pick(['work', 'images', 'words', 'drawings']), 0, dy]];
     const used = new Set();
@@ -181,33 +189,14 @@
     });
   }
   function turnOver(t) {
-    if (tagEl.classList.contains("on")) tagEl.textContent = "Open";
+    if (tagEl.classList.contains('on')) tagEl.textContent = 'Open';
     t.el.classList.remove('down');
     t.el.setAttribute('aria-label', label(t.c));
   }
 
-  /* the light, the tilt and the cursor tag */
-  // The light follows the pointer. A card under it leans toward the pointer and its foil
-  // catches the light. A small tag by the pointer says what a click will do.
-  const root = document.documentElement, tagEl = $('#tag'), fine = matchMedia('(pointer: fine)').matches;
-  let lit = null, frame = 0, pointer = { x: innerWidth * .3, y: innerHeight * .32 };
-  function shine() {
-    frame = 0;
-    root.style.setProperty('--lx', pointer.x + 'px');
-    root.style.setProperty('--ly', pointer.y + 'px');
-    if (fine) tagEl.style.transform = `translate(${pointer.x + 16}px, ${pointer.y + 18}px)`;
-  }
-  function lean(el, x, y) {
-    if (lit && lit !== el) { lit.classList.remove('lit'); lit.style.removeProperty('--rx'); lit.style.removeProperty('--ry'); }
-    lit = el;
-    if (!el || reduced) return;
-    const r = el.getBoundingClientRect(), px = clamp((x - r.left) / r.width, 0, 1), py = clamp((y - r.top) / r.height, 0, 1);
-    el.classList.add('lit');
-    el.style.setProperty('--rx', ((.5 - py) * 16).toFixed(2) + 'deg');
-    el.style.setProperty('--ry', ((px - .5) * 18).toFixed(2) + 'deg');
-    el.style.setProperty('--hx', (px * 100).toFixed(1) + '%');
-    el.style.setProperty('--hy', (py * 100).toFixed(1) + '%');
-  }
+  /* the tag by the pointer */
+  const tagEl = $('#tag'), fine = matchMedia('(pointer: fine)').matches;
+  let frame = 0, pointer = { x: 0, y: 0 };
   function say(target) {
     if (!fine) return;
     const card = target.closest && target.closest('.card'), deck = target.closest && target.closest('.deck');
@@ -217,12 +206,10 @@
   }
   addEventListener('pointermove', e => {
     pointer = { x: e.clientX, y: e.clientY };
-    if (!frame) frame = requestAnimationFrame(shine);
-    if (!held) lean(e.target.closest && e.target.closest('.card'), e.clientX, e.clientY);
+    if (fine && !frame) frame = requestAnimationFrame(() => { frame = 0; tagEl.style.transform = `translate(${pointer.x + 14}px, ${pointer.y + 16}px)`; });
     say(e.target);
   }, { passive: true });
-  document.addEventListener('pointerleave', () => { lean(null); tagEl.classList.remove('on'); });
-  shine();
+  document.addEventListener('pointerleave', () => tagEl.classList.remove('on'));
 
   /* picking up, moving and flicking */
   let held = null;
@@ -255,14 +242,14 @@
     if (moved < 6 && performance.now() - t0 < 400) return tap(t);
     const [a, b] = [trail[0], trail[trail.length - 1]], dt = Math.max(16, b[2] - a[2]);
     t.vx = (b[0] - a[0]) / dt * 16; t.vy = (b[1] - a[1]) / dt * 16;
-    t.va = clamp(t.vx * .12, -4, 4);
+    t.va = clamp(t.vx * .1, -3, 3);
     if (!reduced) slide();
   };
   table.addEventListener('pointerup', letGo);
   table.addEventListener('pointercancel', letGo);
   table.addEventListener('click', e => { if (e.detail === 0) { const t = onTable.find(x => x.el === e.target.closest('.card')); if (t) tap(t); } });
 
-  // Flicked cards slide, slow down and bounce off the edges.
+  // Flicked cards slide, slow down and stop at the edges of the page.
   let sliding = false;
   function slide() {
     if (sliding) return;
@@ -273,10 +260,10 @@
         if (Math.abs(t.vx) + Math.abs(t.vy) + Math.abs(t.va) < .05) { t.vx = t.vy = t.va = 0; return; }
         moving = true;
         t.x += t.vx; t.y += t.vy; t.a += t.va;
-        t.vx *= .93; t.vy *= .93; t.va *= .9;
-        const minX = 2, maxX = L.W - L.cw - 2, minY = L.top - L.ch * .2, maxY = L.bottom - L.ch * .55;
-        if (t.x < minX || t.x > maxX) { t.x = clamp(t.x, minX, maxX); t.vx *= -.5; }
-        if (t.y < minY || t.y > maxY) { t.y = clamp(t.y, minY, maxY); t.vy *= -.5; }
+        t.vx *= .92; t.vy *= .92; t.va *= .9;
+        const minX = 2, maxX = L.right - L.cw - 2, minY = L.top - L.ch * .2, maxY = L.bottom - L.ch * .55;
+        if (t.x < minX || t.x > maxX) { t.x = clamp(t.x, minX, maxX); t.vx *= -.4; }
+        if (t.y < minY || t.y > maxY) { t.y = clamp(t.y, minY, maxY); t.vy *= -.4; }
         place(t);
       });
       if (moving) requestAnimationFrame(step); else sliding = false;
@@ -292,9 +279,9 @@
   function open(c) {
     const d = DECK[c.suit], i = d.cards.indexOf(c), s = d.suit;
     big.innerHTML = `<article class="bigcard s-${c.suit} t-${c.type}">
-      <button class="close" type="button" aria-label="Close">×</button>
+      <button class="close" type="button" aria-label="Close">Close</button>
       <div class="big-in">${inside(c)}</div>
-      <nav class="big-nav"><button type="button" data-by="-1" aria-label="Previous">←</button><span><i class="pip-s">${s.pip}</i> ${s.name} · ${i + 1} of ${d.cards.length}</span><button type="button" data-by="1" aria-label="Next">→</button></nav>
+      <nav class="big-nav"><button type="button" data-by="-1" aria-label="Previous">← Previous</button><span>${s.num} · ${s.name} · ${i + 1} of ${d.cards.length}</span><button type="button" data-by="1" aria-label="Next">Next →</button></nav>
     </article>`;
     $('.close', big).addEventListener('click', () => big.close());
     $$('.big-nav button', big).forEach(b => b.addEventListener('click', () => open(d.cards[(i + +b.dataset.by + d.cards.length) % d.cards.length])));
@@ -331,7 +318,7 @@
   function openCV() {
     const C = S.card;
     big.innerHTML = `<article class="bigcard cv">
-      <button class="close" type="button" aria-label="Close">×</button>
+      <button class="close" type="button" aria-label="Close">Close</button>
       <div class="big-in"><div class="bb-back">
         <div class="bb-head"><h2>${esc(S.name)}</h2><span class="bb-pos">${esc(C.position)}</span></div>
         <div class="bb-vitals">${C.vitals.map(([k, v]) => `<span><b>${esc(k)}:</b> ${esc(v)}</span>`).join('')}</div>
