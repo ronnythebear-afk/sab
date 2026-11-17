@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Summer Anne Burton</title>
 <meta name="description" content="Summer Anne Burton is a creative director in Austin, Texas.">
-<meta name="theme-color" content="#2e6b54">
+<meta name="theme-color" content="#f5f3ef">
 <meta name="color-scheme" content="light">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Summer Anne Burton">
@@ -16,32 +16,34 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600..900&family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..500&family=Space+Mono:wght@400;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..500&display=swap">
 <link rel="stylesheet" href="assets/site.css">
 </head>
 <body class="table">
 <!--
-  A card table on a cutting mat. Everything is a card in one of five decks along the bottom:
-  Work, Posts, Words, Art and Music, newest on top. Tap a deck to deal its next card. Cards
-  can be moved and flicked around the mat, and tapping one opens it.
+  A card table. Everything is a card in one of four decks: Work, Images, Words and Baseball
+  drawings, newest on top. Tap a deck to deal its next card. Cards can be moved and flicked
+  around, and tapping one opens it. Pull a reading lays out five cards face down. Radio
+  shuffles a Spotify playlist.
 -->
-<div class="mat" id="mat" aria-hidden="true"><div class="ruler top" id="ruler-top"></div><div class="ruler left" id="ruler-left"></div><i class="angle"></i></div>
-
-<header class="mast">
-  <button class="strip" id="strip" type="button" aria-label="Photo booth: take new pictures"></button>
-  <div class="mast-words">
+<header class="top">
+  <button class="me" id="me" type="button" aria-label="Photo booth: take a new picture"><img id="me-img" alt="" src=""></button>
+  <div class="who">
     <h1 class="name" id="name"></h1>
     <p class="role" id="role"></p>
   </div>
+  <nav class="hud" aria-label="Get in touch">
+    <span class="avail" id="avail" hidden></span><button class="radio" id="radio" type="button" aria-pressed="false" hidden><i class="eq" aria-hidden="true"><b></b><b></b><b></b></i>Radio</button><a href="#cv" id="cv-link">CV</a><a id="mail" class="mail">Email</a>
+  </nav>
 </header>
-
-<nav class="hud" aria-label="Get in touch">
-  <span class="avail" id="avail" hidden></span><a href="#cv" id="cv-link">CV</a><a id="mail" class="mail">Email</a>
-</nav>
+<div class="player" id="player" hidden><div id="spot"></div><button class="shuffle" id="shuffle" type="button">Shuffle</button></div>
 
 <main class="cards" id="cards" aria-label="Cards on the table"></main>
 
-<nav class="decks" id="decks" aria-label="Decks"></nav>
+<div class="dock">
+  <button class="reading" id="reading" type="button">Pull a reading</button>
+  <nav class="decks" id="decks" aria-label="Decks"></nav>
+</div>
 
 <dialog class="big" id="big" aria-label="A card, up close"></dialog>
 <div class="flash" id="flash" aria-hidden="true"></div>
@@ -49,6 +51,7 @@
 <script src="content/content.js"></script>
 <script src="content/feed.js"></script>
 <script src="content/faces.js"></script>
+<script src="content/radio.js"></script>
 <script src="assets/deck.js"></script>
 </body>
 </html>

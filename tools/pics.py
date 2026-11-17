@@ -1,5 +1,5 @@
 """
-Turns pictures in the drop folder into cards on the Posts deck.
+Turns pictures in the drop folder into cards on the Images deck.
 
     pip install pillow pillow-heif
     python3 tools/pics.py

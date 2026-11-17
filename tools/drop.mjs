@@ -3,13 +3,13 @@
 //   node tools/drop.mjs
 //
 // drop.txt holds anything, with a blank line between things:
-//   a link to a post on X          becomes a Posts card with the post's words and date
-//   a link to an Instagram post    becomes a Posts card that opens the post
-//   a Spotify playlist link        becomes a Music card with its cover
+//   a link to a post on X          becomes a Words card with the post's words and date
+//   a link to an Instagram post    becomes an Images card that opens the post
 //   a link to an article            becomes a Words card. If Summer wrote it, the site keeps
 //                                   a clean copy to read here; if not, it's a Shared card.
 //   any other link                 becomes a Shared card with the page's title and picture
-//   just words, no link            becomes a thought on the Posts deck
+//   just words, no link            becomes a thought on the Words deck
+//   a Spotify playlist link        becomes what the Radio button plays (tools/radio.mjs)
 // Words written next to a link go on the card with it.
 //
 // Each thing is added to the top of site/content/feed.js and taken out of drop.txt. Pictures
@@ -20,6 +20,7 @@ import vm from 'node:vm';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { clipOne, outletOf, slugOf, decode, text } from './clip.mjs';
+import { radio } from './radio.mjs';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const dropFile = path.join(root, 'drop.txt');
@@ -69,12 +70,6 @@ async function xPost(url, note) {
   const d = new Date(text((j.html.match(/<a[^>]*>([^<]*\d{4})<\/a>\s*<\/blockquote>/) || [])[1] || ''));
   return { id: 'x-' + hash(url), type: 'post', source: 'X', date: isNaN(d) ? today() : d.toISOString().slice(0, 10), text: words + (note ? `\n\n${note}` : ''), url: j.url || url };
 }
-async function playlist(url, note) {
-  const id = (url.match(/playlist\/([A-Za-z0-9]{22})/) || [])[1];
-  const j = JSON.parse((await getText('https://open.spotify.com/oembed?url=' + encodeURIComponent(`https://open.spotify.com/playlist/${id}`))).body);
-  const img = j.thumbnail_url ? await saveImage(j.thumbnail_url, 'crate', id) : '';
-  return { id: 'p-' + id, type: 'playlist', date: today(), title: j.title || 'Playlist', text: note, url: `https://open.spotify.com/playlist/${id}`, spotify: id, img };
-}
 // Any other page: an article by Summer gets a clean copy; anything else is shared.
 async function page(url, note) {
   let html = '', final = url;
@@ -104,7 +99,7 @@ async function card(block) {
   const host = new URL(url).hostname.replace(/^(www|mobile)\./, '');
   if (/^(x|twitter)\.com$/.test(host) && /\/status\/\d+/.test(url)) return xPost(url, note);
   if (/instagram\.com$/.test(host)) return { id: 'g-' + hash(url), type: 'post', source: 'Instagram', date: today(), text: note, url };
-  if (host === 'open.spotify.com' && /\/playlist\//.test(url)) return playlist(url, note);
+  if (host === 'open.spotify.com' && /\/playlist\//.test(url)) { const r = await radio(url); return { radio: true, title: r.title || r.id }; }
   return page(url, note);
 }
 
@@ -124,6 +119,7 @@ async function main() {
   for (const b of blocks) {
     try {
       const c = await card(b);
+      if (c.radio) { console.log('the radio now plays:', c.title); continue; }
       if (seen.has(c.url || c.text)) { console.log('already on the site:', (c.url || c.text).slice(0, 70)); continue; }
       feed.push(c); seen.add(c.url || c.text); added++;
       console.log(`added a ${c.type}:`, (c.title || c.text || c.url).slice(0, 70));

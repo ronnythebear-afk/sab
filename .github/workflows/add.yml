@@ -1,5 +1,6 @@
 # When drop.txt or the drop folder changes, this turns what's there into cards on the site
 # (tools/drop.mjs for links and words, tools/pics.py for pictures) and saves the result here.
+# A Spotify playlist link in drop.txt switches the radio (tools/radio.mjs).
 name: Add new things
 on:
   push:

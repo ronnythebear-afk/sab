@@ -1,11 +1,12 @@
 # Drop anything here, with a blank line between things. A couple of minutes after you
 # commit, each one is a card on the site and this file is empty again.
 #
-#   A link to a post on X or Instagram             goes on the Posts deck
+#   A link to a post on X                          goes on Words, with the post's words
+#   A link to an Instagram post                    goes on Images
 #   A link to an article you wrote                 goes on Words, with a copy to read on the site
 #   A link to anything else you want to share      goes on Words as a Shared card
-#   A Spotify playlist link                        goes on Music
-#   Just words, no link                            a thought, on the Posts deck
+#   Just words, no link                            a thought, on Words
+#   A Spotify playlist link                        becomes what Radio plays
 #
 # Words on the line before or after a link go on the card with it. Pictures go in the
 # drop folder instead. Lines starting with # are ignored.
